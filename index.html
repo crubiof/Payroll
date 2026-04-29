@@ -16,7 +16,7 @@ body{background:#f0f2f7;display:flex;height:100vh;overflow:hidden;font-size:13px
 .nav{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:6px;cursor:pointer;color:#6B82A8;font-size:12px;margin-bottom:1px;transition:all .15s;white-space:nowrap}
 .nav:hover{background:#243558;color:#C8D8F0}
 .nav.on{background:#243558;color:#fff}
-.nav-ico{font-size:13px;width:16px;text-align:center}
+.nav-ico{font-size:13px;width:18px;text-align:center}
 .sb-footer{margin-top:auto;padding:12px;border-top:1px solid #243558}
 .sb-period{background:#243558;border-radius:8px;padding:10px 12px}
 .sb-period label{color:#5A7099;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:5px}
@@ -45,16 +45,22 @@ body{background:#f0f2f7;display:flex;height:100vh;overflow:hidden;font-size:13px
 .kc{background:#fff;border:1px solid #E0E6F0;border-radius:10px;padding:14px 16px}
 .kc.warn{border-color:#F7C1C1;background:#FEF3F2}
 .kc.ok{border-color:#A5D6A7;background:#E8F5E9}
+.kc.gold{border-color:#F5C97D;background:#FFF8E7}
 .kl{font-size:10px;color:#6B82A8;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
 .kv{font-size:22px;font-weight:700;color:#1B2A4A;line-height:1}
 .kc.warn .kv{color:#A32D2D}
 .kc.ok .kv{color:#2E7D32}
+.kc.gold .kv{color:#8B5E00}
 .ks{font-size:11px;color:#8BA3C7;margin-top:3px}
 .card{background:#fff;border:1px solid #E0E6F0;border-radius:10px;padding:18px;margin-bottom:16px}
-.card-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.card-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px}
 .card-ti{font-size:13px;font-weight:600;color:#1B2A4A}
 table{width:100%;border-collapse:collapse;font-size:12px}
-th{background:#F4F6FB;color:#6B82A8;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;padding:8px 11px;text-align:left;border-bottom:1px solid #E0E6F0;white-space:nowrap;position:sticky;top:0}
+th{background:#F4F6FB;color:#6B82A8;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;padding:8px 11px;text-align:left;border-bottom:1px solid #E0E6F0;white-space:nowrap}
+th.sortable{cursor:pointer;user-select:none}
+th.sortable:hover{background:#EEF1F8;color:#1B2A4A}
+th.sortable .si{color:#B8C5D8;margin-left:3px;font-size:10px}
+th.sorted .si{color:#1B2A4A}
 td{padding:7px 11px;border-bottom:1px solid #F0F3F8;color:#1B2A4A;vertical-align:middle}
 tr:last-child td{border-bottom:none}
 tr:hover td{background:#FAFBFE}
@@ -78,23 +84,23 @@ tfoot td{font-weight:600;background:#F4F6FB;border-top:2px solid #E0E6F0;border-
 .tog input:checked+.sl::before{transform:translateX(15px)}
 .hm-wrap{overflow-x:auto;padding-bottom:4px}
 .hm-table{border-collapse:separate;border-spacing:3px;font-size:10px}
-.hm-table th{background:none;border:none;font-size:9px;padding:1px 3px;text-align:center;color:#8BA3C7;position:static}
+.hm-table th{background:none;border:none;font-size:9px;padding:1px 3px;text-align:center;color:#8BA3C7;position:static;white-space:nowrap;font-weight:500}
+.hm-table th.rotated{writing-mode:vertical-rl;transform:rotate(180deg);height:90px;vertical-align:bottom;text-overflow:ellipsis;max-width:18px}
 .hm-table td{padding:0;border:none;background:none}
-.hm-cell{width:18px;height:18px;border-radius:2px;display:block;cursor:default}
-.hm0{background:#EEF1F8}
-.hm1{background:#B5D4F4}
-.hm2{background:#378ADD}
-.hm3{background:#185FA5}
-.hm4{background:#1B2A4A}
-.hm-name{font-size:10px;white-space:nowrap;text-align:right!important;padding-right:6px!important;color:#1B2A4A;font-weight:500}
+.hm-cell{width:24px;height:22px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:9px;color:#fff;font-weight:500;cursor:default}
+.hm-cell.empty{background:#F0F3F8;color:transparent}
+.hm-name{font-size:11px;white-space:nowrap;text-align:right!important;padding-right:8px!important;color:#1B2A4A;font-weight:500}
 .bar-wrap{margin-top:6px}
 .bar-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
-.bar-label{font-size:11px;color:#1B2A4A;width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:right;flex-shrink:0}
-.bar-track{flex:1;background:#EEF1F8;border-radius:4px;height:13px;min-width:0}
+.bar-label{font-size:11px;color:#1B2A4A;width:170px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:right;flex-shrink:0}
+.bar-track{flex:1;background:#EEF1F8;border-radius:4px;height:14px;min-width:0;position:relative;overflow:hidden}
 .bar-fill{height:100%;border-radius:4px;background:#1B2A4A;transition:width .4s}
-.bar-val{font-size:11px;color:#6B82A8;width:130px;flex-shrink:0}
+.bar-fill.green{background:#2E7D32}
+.bar-fill.amber{background:#E65100}
+.bar-fill.red{background:#C62828}
+.bar-val{font-size:11px;color:#6B82A8;width:140px;flex-shrink:0}
 .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;z-index:1000}
-.modal{background:#fff;border-radius:12px;padding:22px;width:460px;max-width:95vw;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.modal{background:#fff;border-radius:12px;padding:22px;width:520px;max-width:95vw;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2)}
 .modal h3{font-size:14px;font-weight:600;color:#1B2A4A;margin-bottom:14px}
 .frow{margin-bottom:11px}
 .frow label{display:block;font-size:11px;color:#6B82A8;margin-bottom:3px;font-weight:500}
@@ -112,15 +118,28 @@ tfoot td{font-weight:600;background:#F4F6FB;border-top:2px solid #E0E6F0;border-
 .empty{text-align:center;padding:48px;color:#8BA3C7}
 .empty-ico{font-size:36px;margin-bottom:10px}
 .empty p{font-size:13px;line-height:1.6}
-.legend{display:flex;gap:10px;flex-wrap:wrap}
+.legend{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .leg-item{display:flex;align-items:center;gap:4px;font-size:10px;color:#6B82A8}
 .leg-dot{width:11px;height:11px;border-radius:2px;flex-shrink:0}
-.sec-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.sec-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px}
 .sec-hd h2{font-size:15px;font-weight:600;color:#1B2A4A}
 .tbl-wrap{overflow-x:auto}
 .rate-info{background:#EEF1F8;border-radius:8px;padding:12px 16px;font-size:12px;color:#6B82A8;line-height:1.7}
 .rate-info strong{color:#1B2A4A}
-.divider{height:1px;background:#F0F3F8;margin:14px 0}
+.tabs{display:flex;gap:0;background:#EEF1F8;border-radius:8px;padding:3px;margin-bottom:16px;width:fit-content}
+.tab{padding:7px 14px;font-size:12px;font-weight:500;color:#6B82A8;border-radius:6px;cursor:pointer;transition:.15s}
+.tab.on{background:#fff;color:#1B2A4A;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.tab:hover:not(.on){color:#1B2A4A}
+.pivot-controls{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;background:#F8FAFD;padding:12px;border-radius:8px;border:1px solid #E0E6F0}
+.pivot-controls label{display:block;font-size:10px;font-weight:600;color:#6B82A8;text-transform:uppercase;margin-bottom:4px;letter-spacing:.04em}
+.pivot-controls select{width:100%;padding:6px 10px;border:1px solid #D0D9E8;border-radius:6px;font-size:12px;color:#1B2A4A;background:#fff;outline:none}
+.medal{display:inline-block;font-size:14px;margin-right:4px}
+.adj-input{width:90px;padding:4px 6px;border:1px solid #D0D9E8;border-radius:4px;font-size:11px;text-align:right;outline:none}
+.adj-input:focus{border-color:#1B2A4A}
+.perf-card{background:linear-gradient(135deg,#FFF8E7 0%,#FFFAF0 100%);border:1px solid #F5C97D;border-radius:12px;padding:18px;text-align:center;margin-bottom:16px}
+.perf-card h3{font-size:11px;font-weight:600;text-transform:uppercase;color:#8B5E00;letter-spacing:.06em;margin-bottom:8px}
+.perf-card .big{font-size:28px;font-weight:700;color:#1B2A4A;line-height:1.1}
+.perf-card .sub{font-size:12px;color:#6B82A8;margin-top:4px}
 @media print{#sb,#toast,.btn,.tb-r{display:none!important}#mn{overflow:visible}#ct{overflow:visible;padding:8px}.sec{display:block!important}.card{break-inside:avoid}}
 </style>
 </head>
@@ -137,8 +156,9 @@ tfoot td{font-weight:600;background:#F4F6FB;border-top:2px solid #E0E6F0;border-
   </div>
   <div class="sb-sect">
     <span class="sb-lbl">Reports</span>
+    <div class="nav" data-sec="payroll"><span class="nav-ico">$</span>Payroll</div>
     <div class="nav" data-sec="performance"><span class="nav-ico">★</span>Performance</div>
-    <div class="nav" data-sec="costcenter"><span class="nav-ico">$</span>Cost Centers</div>
+    <div class="nav" data-sec="costcenter"><span class="nav-ico">⌂</span>Cost Centers</div>
   </div>
   <div class="sb-sect">
     <span class="sb-lbl">Setup</span>
@@ -148,10 +168,18 @@ tfoot td{font-weight:600;background:#F4F6FB;border-top:2px solid #E0E6F0;border-
   </div>
   <div class="sb-footer">
     <div class="sb-period">
-      <label>Period</label>
-      <select id="period-sel" onchange="setPeriod(this.value)">
-        <option value="">All time</option>
+      <label>Date Range</label>
+      <select id="period-sel" onchange="applyPreset(this.value)" style="margin-bottom:6px">
+        <option value="all">All time</option>
+        <option value="thismonth">This month</option>
+        <option value="lastmonth">Last month</option>
+        <option value="last3">Last 3 months</option>
+        <option value="thisyear">This year</option>
+        <option value="lastyear">Last year</option>
+        <option value="custom">Custom range</option>
       </select>
+      <input type="date" id="dfrom" onchange="setCustomRange()" style="background:#1B2A4A;border:1px solid #3D5580;border-radius:4px;color:#C8D8F0;font-size:11px;padding:4px 6px;color-scheme:dark;width:100%;margin-bottom:4px;outline:none">
+      <input type="date" id="dto" onchange="setCustomRange()" style="background:#1B2A4A;border:1px solid #3D5580;border-radius:4px;color:#C8D8F0;font-size:11px;padding:4px 6px;color-scheme:dark;width:100%;outline:none">
     </div>
   </div>
 </aside>
@@ -164,13 +192,16 @@ tfoot td{font-weight:600;background:#F4F6FB;border-top:2px solid #E0E6F0;border-
     </div>
     <div class="tb-r">
       <button class="btn btn-o" onclick="loadFromSheets()" id="load-btn">⟳ Sync Sheets</button>
-      <button class="btn btn-o" onclick="showPasteCSV()" title="Paste CSV manually">📋 Paste CSV</button>
+      <button class="btn btn-o" onclick="document.getElementById('file-input').click()" title="Upload XLSX or CSV file">📁 Upload File</button>
+      <button class="btn btn-o" onclick="showPasteCSV()" title="Paste tab-separated or CSV data">📋 Paste Data</button>
       <button class="btn btn-p" onclick="navigate('export')">↓ Export</button>
+      <input type="file" id="file-input" accept=".xlsx,.xls,.csv,.tsv,.txt" style="display:none" onchange="uploadFile(event)">
     </div>
   </div>
   <div id="ct">
     <div class="sec on" id="sec-overview"></div>
     <div class="sec" id="sec-rawdata"></div>
+    <div class="sec" id="sec-payroll"></div>
     <div class="sec" id="sec-performance"></div>
     <div class="sec" id="sec-costcenter"></div>
     <div class="sec" id="sec-employees"></div>
@@ -187,7 +218,11 @@ tfoot td{font-weight:600;background:#F4F6FB;border-top:2px solid #E0E6F0;border-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
 const SHEET_ID='1l6XtGN_h7k9IKmbwuvoalggDoJABcDhY2E1VNzUVIO4';
-const BASE_SALARY=500, BASE_HOURS=240, BASE_RATE=BASE_SALARY/BASE_HOURS;
+const BASE_SALARY=500, BASE_SALARY_PT=250;
+const RATE_REG=BASE_SALARY/160;        // $3.1250/hr — regular hours
+const RATE_OT=RATE_REG;                // $3.1250/hr — 1.5× hours paid at SAME rate (no premium, just tracked)
+const RATE_OT2=(BASE_SALARY/240)*2;    // $4.1667/hr — 2× rate for holidays / days off
+const BASE_RATE=RATE_REG;              // backward compat
 
 const EC_HOL=[
   {date:'2023-01-01',name:'Año Nuevo'},{date:'2023-02-20',name:'Carnaval'},{date:'2023-02-21',name:'Carnaval'},
@@ -212,7 +247,8 @@ const EC_HOL=[
   {date:'2026-11-03',name:'Independencia de Cuenca'},{date:'2026-12-25',name:'Navidad'},
 ];
 
-let S={records:[],roster:{},holidays:[...EC_HOL],period:'',section:'overview'};
+let S={records:[],roster:{},holidays:[...EC_HOL],adjustments:[],period:'',section:'overview',perfTab:'team',pivot:{rows:'employee',cols:'listing',metric:'avgPerListing'}};
+let sortState={};
 
 // ── STORAGE ──
 function save(){
@@ -220,20 +256,28 @@ function save(){
     localStorage.setItem('pd_r',JSON.stringify(S.records));
     localStorage.setItem('pd_ro',JSON.stringify(S.roster));
     localStorage.setItem('pd_h',JSON.stringify(S.holidays));
+    localStorage.setItem('pd_adj',JSON.stringify(S.adjustments));
   }catch(e){toast('Storage nearly full — export a backup JSON!','warn');}
 }
 function loadStore(){
   try{
-    const r=localStorage.getItem('pd_r'),ro=localStorage.getItem('pd_ro'),h=localStorage.getItem('pd_h');
+    const r=localStorage.getItem('pd_r'),ro=localStorage.getItem('pd_ro'),h=localStorage.getItem('pd_h'),adj=localStorage.getItem('pd_adj');
     if(r)S.records=JSON.parse(r);
     if(ro)S.roster=JSON.parse(ro);
     if(h)S.holidays=JSON.parse(h);
+    if(adj)S.adjustments=JSON.parse(adj);
   }catch(e){console.error(e);}
 }
 
 // ── TIME/DATE ──
 function parseTime(s){
-  if(!s)return null;
+  if(s===null||s===undefined||s==='')return null;
+  if(s instanceof Date){return String(s.getHours()).padStart(2,'0')+':'+String(s.getMinutes()).padStart(2,'0');}
+  if(typeof s==='number'){
+    const tm=Math.round(s*24*60);
+    const h=Math.floor(tm/60)%24,mn=tm%60;
+    return String(h).padStart(2,'0')+':'+String(mn).padStart(2,'0');
+  }
   const m=String(s).trim().match(/(\d+):(\d+)(?::\d+)?\s*(AM|PM)?/i);
   if(!m)return null;
   let h=parseInt(m[1]);const mn=m[2],ap=(m[3]||'').toUpperCase();
@@ -242,7 +286,8 @@ function parseTime(s){
   return String(h).padStart(2,'0')+':'+mn;
 }
 function parseDate(s){
-  if(!s)return null;
+  if(s===null||s===undefined||s==='')return null;
+  if(s instanceof Date){return s.getFullYear()+'-'+String(s.getMonth()+1).padStart(2,'0')+'-'+String(s.getDate()).padStart(2,'0');}
   const m=String(s).trim().match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
   return m?`${m[3]}-${m[1].padStart(2,'0')}-${m[2].padStart(2,'0')}`:null;
 }
@@ -253,33 +298,47 @@ function hDiff(t1,t2){
   return parseFloat((ms/60).toFixed(4));
 }
 function fmt(d){if(!d)return'';const[y,m,dd]=d.split('-');return`${dd}/${m}/${y}`;}
-function monthLabel(ym){
-  if(!ym)return'All time';
-  const[y,m]=ym.split('-');
-  return['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][parseInt(m)-1]+' '+y;
+function monthLabel(p){
+  if(!p)return'All time';
+  const M=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  if(p.includes('~')){
+    const[from,to]=p.split('~');
+    if(from&&to){
+      if(from.substring(0,7)===to.substring(0,7)&&from.endsWith('-01')){
+        const[y,m]=from.split('-');
+        const last=new Date(parseInt(y),parseInt(m),0).getDate();
+        if(to.endsWith('-'+String(last).padStart(2,'0')))return M[parseInt(m)-1]+' '+y;
+      }
+      return fmt(from)+' – '+fmt(to);
+    }
+    if(from)return'From '+fmt(from);
+    if(to)return'Until '+fmt(to);
+    return'All time';
+  }
+  if(p.length===7){const[y,m]=p.split('-');return M[parseInt(m)-1]+' '+y;}
+  return fmt(p);
 }
-function fC(n){return'$'+parseFloat(n).toFixed(2);}
-function fH(n){return parseFloat(n).toFixed(2)+'h';}
+function fC(n){return'$'+parseFloat(n||0).toFixed(2);}
+function fH(n){return parseFloat(n||0).toFixed(2)+'h';}
 function firstName(n){return(n||'').split(' ')[0];}
 
 // ── PAYROLL ──
 function isHoliday(date){return S.holidays.some(h=>h.date===date);}
 function calcRecord(r){
-  if(r.del)return{hours:0,pay:0,otType:'del'};
+  if(r.del)return{hours:0,pay:0,otType:'del',regH:0,regP:0,otH:0,otP:0,ot2H:0,ot2P:0};
   const hours=hDiff(r.in,r.out);
-  if(hours<=0)return{hours:0,pay:0,otType:'err'};
-  const rate=BASE_RATE;
+  if(hours<=0)return{hours:0,pay:0,otType:'err',regH:0,regP:0,otH:0,otP:0,ot2H:0,ot2P:0};
   const hol=isHoliday(r.date);
-  let pay,otType;
+  let regH=0,regP=0,otH=0,otP=0,ot2H=0,ot2P=0,otType;
   if(r.ot2x||hol||r.dayoff){
-    pay=hours*rate*2;
+    ot2H=hours;ot2P=hours*RATE_OT2;
     otType=r.ot2x?'2x':hol?'2x-hol':'2x-off';
   }else{
-    const reg=Math.min(hours,8),ot=Math.max(0,hours-8);
-    pay=reg*rate+ot*rate*1.5;
-    otType=ot>0?'1.5x':'regular';
+    regH=Math.min(hours,8);regP=regH*RATE_REG;
+    otH=Math.max(0,hours-8);otP=otH*RATE_OT;
+    otType=otH>0?'1.5x':'regular';
   }
-  return{hours,pay,otType};
+  return{hours,pay:regP+otP+ot2P,otType,regH,regP,otH,otP,ot2H,ot2P};
 }
 function otBadge(r){
   const{otType}=calcRecord(r);
@@ -288,14 +347,122 @@ function otBadge(r){
   if(otType==='1.5x')return'<span class="badge b-15">1.5×</span>';
   return'<span class="badge b-reg">Reg</span>';
 }
+// Fractional months between two dates (inclusive). Each calendar month contributes (days_in_range / total_days_in_that_month)
+function monthsBetween(startStr,endStr){
+  if(!startStr||!endStr)return 0;
+  const start=new Date(startStr+'T12:00:00');
+  const end=new Date(endStr+'T12:00:00');
+  if(start>end)return 0;
+  let units=0;
+  let cur=new Date(start);
+  while(cur<=end){
+    const y=cur.getFullYear(),m=cur.getMonth();
+    const dim=new Date(y,m+1,0).getDate();
+    const lastDay=new Date(y,m,dim,12,0,0);
+    const periodEnd=lastDay>end?end:lastDay;
+    const days=Math.round((periodEnd-cur)/86400000)+1;
+    units+=days/dim;
+    cur=new Date(y,m+1,1,12,0,0);
+  }
+  return units;
+}
+// Detect employee's hire date from first record (used for prorating floor)
+function getEmployeeHireDate(empName){
+  const recs=S.records.filter(r=>!r.del&&r.aux===empName);
+  if(!recs.length)return null;
+  return recs.reduce((min,r)=>r.date<min?r.date:min,recs[0].date);
+}
+// Full payroll calc per employee per period — applies the floor logic
+function calcEmployeePayroll(empName,dateFrom,dateTo){
+  const emp=S.roster[empName]||{type:'FT',salary:BASE_SALARY,role:'cleaner'};
+  const base=emp.salary||(emp.type==='PT'?BASE_SALARY_PT:BASE_SALARY);
+  const records=S.records.filter(r=>!r.del&&r.aux===empName&&(!dateFrom||r.date>=dateFrom)&&(!dateTo||r.date<=dateTo));
+  let regH=0,otH=0,ot2H=0,regP=0,otP=0,ot2P=0;
+  records.forEach(r=>{const c=calcRecord(r);regH+=c.regH;otH+=c.otH;ot2H+=c.ot2H;regP+=c.regP;otP+=c.otP;ot2P+=c.ot2P;});
+  const wagesSubtotal=regP+otP;
+  // Determine effective period for the floor
+  let effStart=dateFrom,effEnd=dateTo;
+  if(!effStart){
+    const all=S.records.filter(r=>!r.del);
+    if(all.length)effStart=all.reduce((min,r)=>r.date<min?r.date:min,all[0].date);
+  }
+  if(!effEnd)effEnd=new Date().toISOString().substring(0,10);
+  // Prorate for hire date (only if hired AFTER period start)
+  const hireDate=getEmployeeHireDate(empName);
+  let prorated=false;
+  if(hireDate&&effStart&&hireDate>effStart){effStart=hireDate;prorated=true;}
+  const months=effStart&&effEnd?monthsBetween(effStart,effEnd):0;
+  const floor=base*months;
+  const wagesPaid=Math.max(wagesSubtotal,floor);
+  const floorBonus=wagesPaid-wagesSubtotal;
+  const honored=wagesSubtotal>=floor;
+  const adjustments=S.adjustments.filter(a=>a.employee===empName&&(!dateFrom||a.date>=dateFrom)&&(!dateTo||a.date<=dateTo)).reduce((s,a)=>s+a.amount,0);
+  return{aux:empName,base,months,floor,hireDate,prorated,
+    regH,regP,otH,otP,ot2H,ot2P,wagesSubtotal,wagesPaid,floorBonus,honored,
+    adjustments,total:wagesPaid+ot2P+adjustments,shifts:records.length};
+}
 
 // ── FILTERED RECORDS ──
+function getDateBounds(){
+  let from='',to='';
+  if(S.period){
+    if(S.period.includes('~')){[from,to]=S.period.split('~');}
+    else if(S.period.length===7){
+      from=S.period+'-01';
+      const[y,m]=S.period.split('-');
+      const last=new Date(parseInt(y),parseInt(m),0).getDate();
+      to=S.period+'-'+String(last).padStart(2,'0');
+    }
+  }
+  return{from,to};
+}
 function filtered(inclDel=false){
+  const{from,to}=getDateBounds();
   return S.records.filter(r=>{
     if(!inclDel&&r.del)return false;
-    if(S.period&&!r.date.startsWith(S.period))return false;
+    if(from&&r.date<from)return false;
+    if(to&&r.date>to)return false;
     return true;
   });
+}
+function filteredAdjustments(){
+  const{from,to}=getDateBounds();
+  return S.adjustments.filter(a=>{
+    if(from&&a.date<from)return false;
+    if(to&&a.date>to)return false;
+    return true;
+  });
+}
+
+// ── SORT UTIL ──
+function sortBy(tableId,col,type){
+  const cur=sortState[tableId];
+  let dir='asc';
+  if(cur&&cur.col===col)dir=cur.dir==='asc'?'desc':'asc';
+  sortState[tableId]={col,dir,type:type||'string'};
+  refresh();
+}
+function sortIcon(tableId,col){
+  const s=sortState[tableId];
+  if(!s||s.col!==col)return'<span class="si">↕</span>';
+  return s.dir==='asc'?'<span class="si">↑</span>':'<span class="si">↓</span>';
+}
+function sortClass(tableId,col){
+  const s=sortState[tableId];
+  return(s&&s.col===col)?'sortable sorted':'sortable';
+}
+function applySort(arr,tableId,defaults){
+  const s=sortState[tableId]||defaults||{col:null,dir:'asc',type:'string'};
+  if(!s.col)return arr;
+  return[...arr].sort((a,b)=>{
+    let av=a[s.col],bv=b[s.col];
+    if(s.type==='number'){av=parseFloat(av)||0;bv=parseFloat(bv)||0;return s.dir==='asc'?av-bv:bv-av;}
+    if(s.type==='date'){return s.dir==='asc'?String(av).localeCompare(String(bv)):String(bv).localeCompare(String(av));}
+    return s.dir==='asc'?String(av||'').localeCompare(String(bv||'')):String(bv||'').localeCompare(String(av||''));
+  });
+}
+function thS(tableId,col,label,type){
+  return`<th class="${sortClass(tableId,col)}" onclick="sortBy('${tableId}','${col}','${type||'string'}')">${label}${sortIcon(tableId,col)}</th>`;
 }
 
 // ── CSV FETCH ──
@@ -303,11 +470,7 @@ async function loadFromSheets(){
   const btn=document.getElementById('load-btn');
   btn.disabled=true;btn.textContent='⟳ Loading...';
   const directUrl=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&cachebust=${Date.now()}`;
-  const proxyUrls=[
-    directUrl,
-    `https://corsproxy.io/?${encodeURIComponent(directUrl)}`,
-    `https://api.allorigins.win/raw?url=${encodeURIComponent(directUrl)}`
-  ];
+  const proxyUrls=[directUrl,`https://corsproxy.io/?${encodeURIComponent(directUrl)}`,`https://api.allorigins.win/raw?url=${encodeURIComponent(directUrl)}`];
   let lastErr='';
   for(let i=0;i<proxyUrls.length;i++){
     try{
@@ -316,77 +479,93 @@ async function loadFromSheets(){
       if(!res.ok){lastErr=`HTTP ${res.status}`;continue;}
       const text=await res.text();
       if(!text||text.length<20){lastErr='Empty response';continue;}
-      if(text.toLowerCase().includes('<html')&&text.toLowerCase().includes('sign in')){
-        lastErr='Sheet is not publicly shared';continue;
-      }
+      if(text.toLowerCase().includes('<html')&&text.toLowerCase().includes('sign in')){lastErr='Sheet is not publicly shared';continue;}
       const rows=parseCSV(text);
-      if(!rows.length){lastErr='No valid rows found in CSV';continue;}
-      const added=mergeRecords(rows);
-      updateRoster(rows);
-      detectOverlaps();save();populatePeriods();refresh();
+      if(!rows.length){lastErr='No valid rows found';continue;}
+      const added=mergeRecords(rows);updateRoster(rows);detectOverlaps();save();populatePeriods();refresh();
       toast(`Synced: ${rows.length} rows, ${added} new records.`,'ok');
-      btn.disabled=false;btn.textContent='⟳ Sync Sheets';
-      return;
+      btn.disabled=false;btn.textContent='⟳ Sync Sheets';return;
     }catch(e){lastErr=e.message||'Network error';}
   }
   showSyncErrorModal(lastErr);
   btn.disabled=false;btn.textContent='⟳ Sync Sheets';
 }
-
 function showSyncErrorModal(err){
   showModal(`<h3>⚠ Could not sync from Google Sheets</h3>
     <p style="font-size:12px;color:#A32D2D;background:#FEF3F2;padding:8px 12px;border-radius:6px;margin-bottom:14px">Error: ${err||'Unknown'}</p>
-    <p style="font-size:12px;color:#1B2A4A;line-height:1.7;margin-bottom:12px"><strong>Possible causes & fixes:</strong></p>
+    <p style="font-size:12px;color:#1B2A4A;line-height:1.7;margin-bottom:12px"><strong>Workarounds:</strong></p>
     <ol style="font-size:12px;color:#1B2A4A;line-height:1.8;padding-left:20px;margin-bottom:14px">
-      <li><strong>Sheet not public.</strong> Open the sheet → Share → "Anyone with the link" → Viewer.</li>
-      <li><strong>Preview environment limits.</strong> The Claude preview iframe may block external fetches. Once you deploy to GitHub Pages, sync should work.</li>
-      <li><strong>CORS issue.</strong> The fallback proxies were also tried and failed.</li>
+      <li>Make sure the sheet is shared as "Anyone with the link → Viewer".</li>
+      <li>Use <em>📁 Upload File</em> to load an XLSX directly.</li>
+      <li>Use <em>📋 Paste Data</em> to paste copied content.</li>
     </ol>
-    <p style="font-size:12px;color:#1B2A4A;line-height:1.6;margin-bottom:12px"><strong>Workaround:</strong> Use <em>📋 Paste CSV</em> to load data manually until deployed.</p>
-    <div class="modal-actions">
-      <button class="btn btn-o" onclick="closeModal()">Close</button>
-      <button class="btn btn-p" onclick="closeModal();showPasteCSV()">📋 Paste CSV instead</button>
-    </div>`);
+    <div class="modal-actions"><button class="btn btn-o" onclick="closeModal()">Close</button>
+      <button class="btn btn-p" onclick="closeModal();showPasteCSV()">📋 Paste Data instead</button></div>`);
 }
-
 function showPasteCSV(){
-  showModal(`<h3>📋 Paste CSV Data</h3>
-    <p style="font-size:12px;color:#8BA3C7;line-height:1.6;margin-bottom:10px">
-      In Google Sheets: <strong>File → Download → Comma-separated values (.csv)</strong>, then open with Notepad/TextEdit and paste here.<br>
-      Or copy directly from the sheet (Ctrl+A, Ctrl+C).
-    </p>
-    <div class="frow"><label>CSV / TSV content (with header row)</label>
-      <textarea id="paste-csv" style="height:240px;font-family:monospace;font-size:11px" placeholder="Timestamp,Auxiliar,Hora de Ingreso,Hora de Salida,Lugar de Trabajo,..."></textarea>
+  showModal(`<h3>📋 Paste Data</h3>
+    <p style="font-size:12px;color:#8BA3C7;line-height:1.6;margin-bottom:10px">Paste tab-separated or comma-separated content (with header row).</p>
+    <div class="frow"><label>Data with headers</label>
+      <textarea id="paste-csv" style="height:240px;font-family:monospace;font-size:11px" placeholder="Timestamp&#9;Auxiliar&#9;Hora de Ingreso&#9;Hora de Salida&#9;Lugar de Trabajo"></textarea>
     </div>
-    <div class="modal-actions">
-      <button class="btn btn-o" onclick="closeModal()">Cancel</button>
-      <button class="btn btn-p" onclick="processPastedCSV()">Import</button>
-    </div>`);
+    <div class="modal-actions"><button class="btn btn-o" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-p" onclick="processPastedCSV()">Import</button></div>`);
 }
-
 function processPastedCSV(){
   let txt=document.getElementById('paste-csv').value.trim();
   if(!txt)return toast('Paste some content first','err');
   if(txt.includes('\t')&&!txt.split('\n')[0].includes(','))txt=txt.replace(/\t/g,',');
   const rows=parseCSV(txt);
-  if(!rows.length)return toast('No valid rows parsed. Check that header row is included.','err');
-  const added=mergeRecords(rows);
-  updateRoster(rows);
-  detectOverlaps();save();populatePeriods();closeModal();refresh();
+  if(!rows.length)return toast('No valid rows parsed','err');
+  const added=mergeRecords(rows);updateRoster(rows);detectOverlaps();save();populatePeriods();closeModal();refresh();
   toast(`Imported ${rows.length} rows, ${added} new.`,'ok');
 }
-
+async function uploadFile(eventOrFile){
+  const file=eventOrFile.target?eventOrFile.target.files[0]:eventOrFile;
+  if(!file)return;
+  if(typeof XLSX==='undefined')return toast('XLSX library still loading','err');
+  try{
+    const buf=await file.arrayBuffer();
+    let rows;
+    const ext=(file.name.split('.').pop()||'').toLowerCase();
+    if(ext==='csv'||ext==='tsv'||ext==='txt'){
+      let txt=new TextDecoder('utf-8').decode(buf);
+      if(txt.includes('\t')&&!txt.split('\n')[0].includes(','))txt=txt.replace(/\t/g,',');
+      rows=parseCSV(txt);
+    }else{
+      const wb=XLSX.read(buf,{type:'array',cellDates:true});
+      const ws=wb.Sheets[wb.SheetNames[0]];
+      const json=XLSX.utils.sheet_to_json(ws,{raw:false,defval:''});
+      rows=json.map(obj=>{
+        const keys=Object.keys(obj);
+        const find=(needle)=>{const k=keys.find(k=>k.toLowerCase().includes(needle.toLowerCase()));return k?obj[k]:'';};
+        const ts=find('Timestamp');const aux=String(find('Auxiliar')||'').trim();
+        const inT=parseTime(find('Ingreso'));const outT=parseTime(find('Salida'));
+        const loc=String(find('Lugar')||'').trim();
+        if(!ts||!aux||!inT||!outT)return null;
+        const date=parseDate(ts);if(!date)return null;
+        const id=`${date}|${aux}|${inT}|${outT}`.replace(/\s/g,'');
+        return{id,date,aux,in:inT,out:outT,loc,
+          dmg:String(find('daño')||find('perdid')||''),
+          notes:String(find('Novedad')||''),
+          ot2x:false,dayoff:false,del:false,edited:false,flagOverlap:false,accepted:false};
+      }).filter(Boolean);
+    }
+    if(!rows.length)return toast('No valid rows found','err');
+    const added=mergeRecords(rows);updateRoster(rows);detectOverlaps();save();populatePeriods();refresh();
+    toast(`Imported ${rows.length} rows from "${file.name}", ${added} new.`,'ok');
+    document.getElementById('file-input').value='';
+  }catch(e){toast('Error: '+(e.message||'Unknown'),'err');console.error(e);}
+}
 function parseCSVLine(line){
   const cols=[];let cur='',inQ=false;
   for(let i=0;i<line.length;i++){
     const c=line[i];
     if(c==='"'){if(inQ&&line[i+1]==='"'){cur+='"';i++;}else inQ=!inQ;}
-    else if(c===','&&!inQ){cols.push(cur);cur='';}
-    else cur+=c;
+    else if(c===','&&!inQ){cols.push(cur);cur='';}else cur+=c;
   }
   cols.push(cur);return cols;
 }
-
 function parseCSV(text){
   const lines=text.split('\n').map(l=>l.trimEnd()).filter(l=>l);
   if(lines.length<2)return[];
@@ -408,10 +587,8 @@ function parseCSV(text){
   }
   return rows;
 }
-
 function mergeRecords(rows){
-  const ex=new Set(S.records.map(r=>r.id));
-  let added=0;
+  const ex=new Set(S.records.map(r=>r.id));let added=0;
   rows.forEach(r=>{if(!ex.has(r.id)){S.records.push(r);ex.add(r.id);added++;}});
   return added;
 }
@@ -421,9 +598,7 @@ function updateRoster(rows){
 function detectOverlaps(){
   S.records.forEach(r=>r.flagOverlap=false);
   const grp={};
-  S.records.filter(r=>!r.del).forEach(r=>{
-    const k=r.aux+'|'+r.date;(grp[k]=grp[k]||[]).push(r);
-  });
+  S.records.filter(r=>!r.del).forEach(r=>{const k=r.aux+'|'+r.date;(grp[k]=grp[k]||[]).push(r);});
   Object.values(grp).forEach(g=>{
     if(g.length<2)return;
     g.sort((a,b)=>a.in.localeCompare(b.in));
@@ -433,38 +608,92 @@ function detectOverlaps(){
   });
 }
 
-// ── NAV / PERIOD ──
+// ── PERIOD/NAV ──
 function populatePeriods(){
   const sel=document.getElementById('period-sel');
-  const months=[...new Set(S.records.map(r=>r.date.substring(0,7)))].sort().reverse();
-  sel.innerHTML='<option value="">All time</option>'+months.map(m=>`<option value="${m}"${S.period===m?' selected':''}>${monthLabel(m)}</option>`).join('');
+  const dfrom=document.getElementById('dfrom'),dto=document.getElementById('dto');
+  if(!sel||!dfrom||!dto)return;
+  if(!S.period){sel.value='all';dfrom.value='';dto.value='';}
+  else if(S.period.includes('~')){
+    const[from,to]=S.period.split('~');
+    dfrom.value=from||'';dto.value=to||'';sel.value='custom';
+  }else if(S.period.length===7){
+    const[y,m]=S.period.split('-');
+    const last=new Date(parseInt(y),parseInt(m),0).getDate();
+    dfrom.value=S.period+'-01';
+    dto.value=S.period+'-'+String(last).padStart(2,'0');
+    sel.value='custom';
+  }
 }
-function setPeriod(v){S.period=v;refresh();}
+function applyPreset(p){
+  const now=new Date();
+  const todayStr=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
+  const lastDayCur=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
+  const monthEndStr=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(lastDayCur).padStart(2,'0');
+  let from='',to='';
+  if(p==='all'){}
+  else if(p==='thismonth'){from=todayStr.substring(0,7)+'-01';to=monthEndStr;}
+  else if(p==='lastmonth'){
+    const d=new Date(now.getFullYear(),now.getMonth()-1,1);
+    const ym=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+    const last=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();
+    from=ym+'-01';to=ym+'-'+String(last).padStart(2,'0');
+  }
+  else if(p==='last3'){
+    const d=new Date(now.getFullYear(),now.getMonth()-2,1);
+    from=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-01';to=monthEndStr;
+  }
+  else if(p==='thisyear'){from=now.getFullYear()+'-01-01';to=monthEndStr;}
+  else if(p==='lastyear'){const y=now.getFullYear()-1;from=y+'-01-01';to=y+'-12-31';}
+  else if(p==='custom'){document.getElementById('dfrom').focus();return;}
+  document.getElementById('dfrom').value=from;
+  document.getElementById('dto').value=to;
+  S.period=(from||to)?`${from}~${to}`:'';
+  refresh();
+}
+function setCustomRange(){
+  const from=document.getElementById('dfrom').value;
+  const to=document.getElementById('dto').value;
+  document.getElementById('period-sel').value='custom';
+  S.period=(from||to)?`${from}~${to}`:'';
+  refresh();
+}
 function navigate(sec){
-  S.section=sec;
+  S.section=sec;sortState={};
   document.querySelectorAll('.nav').forEach(n=>n.classList.toggle('on',n.dataset.sec===sec));
   document.querySelectorAll('.sec').forEach(s=>s.classList.remove('on'));
   document.getElementById('sec-'+sec).classList.add('on');
-  const T={overview:'Overview',rawdata:'Raw Data',performance:'Performance',costcenter:'Cost Centers',employees:'Employees',holidays:'Holidays',export:'Export'};
+  const T={overview:'Overview',rawdata:'Raw Data',payroll:'Payroll Report',performance:'Performance',costcenter:'Cost Centers',employees:'Employees',holidays:'Holidays',export:'Export'};
   document.getElementById('tb-title').textContent=T[sec]||sec;
   document.getElementById('tb-sub').textContent=monthLabel(S.period);
   renderSection(sec);
 }
 function refresh(){
+  populatePeriods();
   document.getElementById('tb-sub').textContent=monthLabel(S.period);
   renderSection(S.section);
 }
 function renderSection(sec){
-  ({overview:renderOverview,rawdata:renderRawData,performance:renderPerformance,
+  ({overview:renderOverview,rawdata:renderRawData,payroll:renderPayroll,performance:renderPerformance,
     costcenter:renderCostCenter,employees:renderEmployees,holidays:renderHolidays,export:renderExport}[sec]||(() => {}))();
 }
 
 // ── OVERVIEW ──
 function renderOverview(){
   const recs=filtered();
-  let tH=0,tP=0;const empSet=new Set();
-  recs.forEach(r=>{const c=calcRecord(r);tH+=c.hours;tP+=c.pay;empSet.add(r.aux);});
+  const adjs=filteredAdjustments();
+  const{from:dateFrom,to:dateTo}=getDateBounds();
+  let tH=0;const empSet=new Set();
+  recs.forEach(r=>{const c=calcRecord(r);tH+=c.hours;empSet.add(r.aux);});
+  adjs.forEach(a=>empSet.add(a.employee));
+  // Use full payroll calc (with floor) for accurate totals
+  const empPayroll=[...empSet].map(aux=>calcEmployeePayroll(aux,dateFrom,dateTo));
+  const tWages=empPayroll.reduce((s,p)=>s+p.wagesPaid+p.ot2P,0);
+  const adjTotal=empPayroll.reduce((s,p)=>s+p.adjustments,0);
+  const tFloorBonus=empPayroll.reduce((s,p)=>s+p.floorBonus,0);
+  const grandTotal=tWages+adjTotal;
   const flags=recs.filter(r=>r.flagOverlap).length;
+  // Cost centers — raw hourly pay (floor isn't location-specific)
   const ccMap={};
   recs.forEach(r=>{
     const l=r.loc||'(Sin asignar)';
@@ -473,58 +702,68 @@ function renderOverview(){
   });
   const ccList=Object.entries(ccMap).sort((a,b)=>b[1].pay-a[1].pay);
   const mxP=ccList[0]?.[1].pay||1;
-  const empList=[...empSet].map(aux=>{
-    const er=recs.filter(r=>r.aux===aux);let h=0,p=0;
-    er.forEach(r=>{const c=calcRecord(r);h+=c.hours;p+=c.pay;});
-    return{aux,shifts:er.length,h,p};
-  }).sort((a,b)=>b.p-a.p);
+  // Top earners — uses full payroll (includes floor)
+  const empList=empPayroll.map(p=>({
+    aux:p.aux,shifts:p.shifts,h:p.regH+p.otH+p.ot2H,
+    wages:p.wagesPaid+p.ot2P,adj:p.adjustments,total:p.total,floorBonus:p.floorBonus,prorated:p.prorated
+  })).sort((a,b)=>b.total-a.total);
 
   document.getElementById('sec-overview').innerHTML=`
   <div class="kgrid">
-    <div class="kc"><div class="kl">Total Hours</div><div class="kv">${tH.toFixed(1)}</div><div class="ks">${recs.length} shifts recorded</div></div>
-    <div class="kc"><div class="kl">Payroll Cost</div><div class="kv">${fC(tP)}</div><div class="ks">Avg ${fC(tP/(empSet.size||1))}/person</div></div>
-    <div class="kc"><div class="kl">Active Employees</div><div class="kv">${empSet.size}</div><div class="ks">${ccList.length} active locations</div></div>
+    <div class="kc"><div class="kl">Total Hours</div><div class="kv">${tH.toFixed(1)}</div><div class="ks">${recs.length} shifts</div></div>
+    <div class="kc"><div class="kl">Payroll Cost</div><div class="kv">${fC(grandTotal)}</div><div class="ks">Wages ${fC(tWages)} ${tFloorBonus>0?'(incl. '+fC(tFloorBonus)+' floor)':''} + Adj ${fC(adjTotal)}</div></div>
+    <div class="kc"><div class="kl">Active Employees</div><div class="kv">${empSet.size}</div><div class="ks">${ccList.length} listings</div></div>
     <div class="kc ${flags?'warn':'ok'}"><div class="kl">Flags / Overlaps</div><div class="kv">${flags}</div><div class="ks">${flags?'Needs review':'All clear'}</div></div>
   </div>
   ${ccList.length?`<div class="card">
-    <div class="card-hd"><span class="card-ti">Payroll Cost by Location</span><span style="font-size:11px;color:#8BA3C7">${monthLabel(S.period)}</span></div>
-    <div class="bar-wrap">${ccList.map(([loc,d])=>`
+    <div class="card-hd"><span class="card-ti">Hourly Cost by Listing <span style="font-size:10px;color:#8BA3C7;font-weight:400">(raw — excludes floor top-ups)</span></span><span style="font-size:11px;color:#8BA3C7">${monthLabel(S.period)}</span></div>
+    <div class="bar-wrap">${ccList.slice(0,12).map(([loc,d])=>`
       <div class="bar-row">
         <div class="bar-label" title="${loc}">${loc}</div>
         <div class="bar-track"><div class="bar-fill" style="width:${(d.pay/mxP*100).toFixed(1)}%"></div></div>
-        <div class="bar-val">${fC(d.pay)} · ${d.shifts} shifts</div>
+        <div class="bar-val">${fC(d.pay)} · ${d.shifts} sh</div>
       </div>`).join('')}</div>
+    ${ccList.length>12?`<p style="font-size:11px;color:#8BA3C7;margin-top:8px;text-align:center">+${ccList.length-12} more listings · <a href="#" onclick="navigate('costcenter');return false" style="color:#1B2A4A">see all</a></p>`:''}
   </div>`:''}
   <div class="card" style="padding:0">
     <div style="padding:14px 18px 8px;display:flex;justify-content:space-between;align-items:center">
-      <span class="card-ti">Employee Summary</span>
-      <button class="btn btn-o btn-sm" onclick="navigate('performance')">See Performance →</button>
+      <span class="card-ti">Top Earners <span style="font-size:10px;color:#8BA3C7;font-weight:400">(includes floor top-ups)</span></span>
+      <button class="btn btn-o btn-sm" onclick="navigate('payroll')">Payroll Report →</button>
     </div>
     ${empList.length?`<div class="tbl-wrap"><table>
-      <thead><tr><th>#</th><th>Employee</th><th>Type</th><th>Shifts</th><th>Hours</th><th>Pay</th></tr></thead>
-      <tbody>${empList.map((e,i)=>{
+      <thead><tr><th>#</th><th>Employee</th><th>Type</th><th>Shifts</th><th>Hours</th><th>Wages</th><th>Adj</th><th>Total</th></tr></thead>
+      <tbody>${empList.slice(0,15).map((e,i)=>{
         const ro=S.roster[e.aux]||{type:'FT'};
-        return`<tr><td style="color:#8BA3C7;font-weight:600">${i+1}</td><td>${firstName(e.aux)}</td>
+        return`<tr><td style="color:#8BA3C7;font-weight:600">${i+1}</td>
+          <td>${firstName(e.aux)}${e.floorBonus>0?' <span style="font-size:9px;color:#1565C0" title="Floor topped up '+fC(e.floorBonus)+'">⤴</span>':''}${e.prorated?' <span style="font-size:9px;color:#1565C0" title="Prorated from hire date">⇲</span>':''}</td>
           <td><span class="badge ${ro.type==='FT'?'b-ft':'b-pt'}">${ro.type}</span></td>
-          <td>${e.shifts}</td><td>${fH(e.h)}</td><td>${fC(e.p)}</td></tr>`;
+          <td>${e.shifts}</td><td>${fH(e.h)}</td><td>${fC(e.wages)}</td>
+          <td style="color:${e.adj>0?'#2E7D32':e.adj<0?'#C62828':'#8BA3C7'}">${e.adj?fC(e.adj):'—'}</td>
+          <td style="font-weight:600">${fC(e.total)}</td></tr>`;
       }).join('')}</tbody>
-    </table></div>`:'<div class="empty"><p>No data. Click "Sync Sheets" to load.</p></div>'}
+    </table></div>`:'<div class="empty"><p>No data. Click "Sync Sheets" or "Upload File" to load.</p></div>'}
   </div>`;
 }
 
 // ── RAW DATA ──
 function renderRawData(){
   const sec=document.getElementById('sec-rawdata');
-  const recs=filtered(true).sort((a,b)=>b.date.localeCompare(a.date)||a.aux.localeCompare(b.aux));
+  let recs=filtered(true);
   const flags=recs.filter(r=>r.flagOverlap&&!r.del).length;
   if(!recs.length){
     sec.innerHTML=`<div class="sec-hd"><h2>Raw Data</h2></div>
-    <div class="empty"><div class="empty-ico">📋</div><p>No records loaded.<br>Click <strong>Sync Sheets</strong> to import from Google Sheets.</p></div>`;return;
+    <div class="empty"><div class="empty-ico">📋</div><p>No records loaded.<br>Click <strong>Sync Sheets</strong> or <strong>Upload File</strong>.</p></div>`;return;
   }
+  // Build rows with computed fields for sorting
+  const computed=recs.map(r=>{
+    const c=calcRecord(r);
+    return{...r,hours:c.hours,pay:c.pay,otBadge:c.otType,fname:firstName(r.aux)};
+  });
+  recs=applySort(computed,'rawdata',{col:'date',dir:'desc',type:'date'});
   const eid=id=>id.replace(/[|.]/g,'_');
   sec.innerHTML=`
   <div class="sec-hd">
-    <h2>Raw Data <span style="font-size:12px;color:#8BA3C7;font-weight:400">(${recs.filter(r=>!r.del).length} active)</span></h2>
+    <h2>Raw Data <span style="font-size:12px;color:#8BA3C7;font-weight:400">(${computed.filter(r=>!r.del).length} active)</span></h2>
     <div style="display:flex;gap:8px;align-items:center">
       ${flags?`<span style="color:#E65100;font-size:11px;font-weight:500">⚠ ${flags} overlap${flags>1?'s':''}</span>`:''}
       <button class="btn btn-o btn-sm" onclick="showAddModal()">+ Add Row</button>
@@ -532,22 +771,32 @@ function renderRawData(){
   </div>
   <div class="card" style="padding:0">
   <div class="tbl-wrap"><table>
-    <thead><tr><th>Date</th><th>Employee</th><th>In</th><th>Out</th><th>Hrs</th><th>Location</th><th>OT</th><th title="Mark 2x — Day off or Holiday">2×</th><th>Pay</th><th>Notes</th><th>Actions</th></tr></thead>
+    <thead><tr>
+      ${thS('rawdata','date','Date','date')}
+      ${thS('rawdata','fname','Employee')}
+      ${thS('rawdata','in','In')}
+      ${thS('rawdata','out','Out')}
+      ${thS('rawdata','hours','Hours','number')}
+      ${thS('rawdata','loc','Location')}
+      ${thS('rawdata','otBadge','OT')}
+      <th title="Mark 2× — Day off or Holiday">2×</th>
+      ${thS('rawdata','pay','Pay','number')}
+      <th>Notes</th><th>Actions</th>
+    </tr></thead>
     <tbody>${recs.map(r=>{
-      const c=calcRecord(r);
       const hol=S.holidays.find(h=>h.date===r.date);
       const cls=r.del?'del-row':r.flagOverlap&&!r.accepted?'ov':r.edited?'ed':'';
       const sid=eid(r.id);
       return`<tr class="${cls}" id="row_${sid}">
         <td>${fmt(r.date)}${hol?` <span title="${hol.name}" style="color:#E65100;font-size:10px">🎉</span>`:''}</td>
-        <td>${firstName(r.aux)}${r.flagOverlap&&!r.accepted?` <span class="wi" title="Overlapping — click to resolve" onclick="resolveOverlap('${r.id.replace(/'/g,"\\'")}')">⚠</span>`:''}${r.edited?' <span style="font-size:9px;color:#1565C0" title="Manually edited">✎</span>':''}</td>
+        <td>${firstName(r.aux)}${r.flagOverlap&&!r.accepted?` <span class="wi" title="Overlapping" onclick="resolveOverlap('${r.id.replace(/'/g,"\\'")}')">⚠</span>`:''}${r.edited?' <span style="font-size:9px;color:#1565C0" title="Edited">✎</span>':''}</td>
         <td>${r.in||'—'}</td><td>${r.out||'—'}</td>
-        <td>${c.hours>0?fH(c.hours):'—'}</td>
+        <td>${r.hours>0?fH(r.hours):'—'}</td>
         <td style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.loc}">${r.loc||'—'}</td>
         <td>${otBadge(r)}</td>
         <td><label class="tog red"><input type="checkbox" ${r.ot2x?'checked':''} ${r.del?'disabled':''} onchange="toggleOT2x('${r.id.replace(/'/g,"\\'")}')"><span class="sl"></span></label></td>
-        <td>${c.pay>0?fC(c.pay):'—'}</td>
-        <td>${r.dmg?`<span style="color:#C62828;cursor:pointer" title="${r.notes||'Damage reported'}">⚠</span>`:'—'}</td>
+        <td>${r.pay>0?fC(r.pay):'—'}</td>
+        <td>${r.dmg?`<span style="color:#C62828;cursor:pointer" title="${r.notes||'Damage'}">⚠</span>`:'—'}</td>
         <td><div style="display:flex;gap:3px">${!r.del
           ?`<button class="btn btn-o btn-sm" onclick="editRow('${r.id.replace(/'/g,"\\'")}')">✎</button><button class="btn btn-d btn-sm" onclick="deleteRow('${r.id.replace(/'/g,"\\'")}')">✕</button>`
           :`<button class="btn btn-g btn-sm" onclick="restoreRow('${r.id.replace(/'/g,"\\'")}')">↩</button>`}</div></td>
@@ -556,95 +805,419 @@ function renderRawData(){
   </table></div></div>`;
 }
 
-// ── PERFORMANCE ──
-function renderPerformance(){
-  const sec=document.getElementById('sec-performance');
+// ── PAYROLL ──
+function renderPayroll(){
+  const sec=document.getElementById('sec-payroll');
   const recs=filtered();
-  if(!recs.length){sec.innerHTML='<div class="empty"><div class="empty-ico">★</div><p>No data for this period</p></div>';return;}
-  const empStats={};
-  recs.forEach(r=>{
-    if(!empStats[r.aux])empStats[r.aux]={shifts:0,hours:0,pay:0,byLoc:{}};
-    const c=calcRecord(r);
-    empStats[r.aux].shifts++;empStats[r.aux].hours+=c.hours;empStats[r.aux].pay+=c.pay;
-    if(r.loc){if(!empStats[r.aux].byLoc[r.loc])empStats[r.aux].byLoc[r.loc]={shifts:0,hours:0};
-      empStats[r.aux].byLoc[r.loc].shifts++;empStats[r.aux].byLoc[r.loc].hours+=c.hours;}
+  const adjs=filteredAdjustments();
+  const{from:dateFrom,to:dateTo}=getDateBounds();
+  if(!recs.length&&!adjs.length){
+    sec.innerHTML='<div class="sec-hd"><h2>Payroll Report</h2></div><div class="empty"><div class="empty-ico">$</div><p>No data for this period</p></div>';return;
+  }
+  const empSet=new Set();
+  recs.forEach(r=>empSet.add(r.aux));
+  adjs.forEach(a=>empSet.add(a.employee));
+  const rows=[...empSet].map(aux=>{
+    const p=calcEmployeePayroll(aux,dateFrom,dateTo);
+    return{...p,fname:firstName(aux),type:(S.roster[aux]||{type:'FT'}).type,role:S.roster[aux]?.role||'cleaner'};
   });
-  const empList=Object.entries(empStats).map(([aux,d])=>({aux,firstName:firstName(aux),...d,avgHrs:d.hours/d.shifts})).sort((a,b)=>a.avgHrs-b.avgHrs);
-  const allDates=[...new Set(recs.map(r=>r.date))].sort();
-  const hmap={};
-  recs.forEach(r=>{if(!hmap[r.aux])hmap[r.aux]={};const c=calcRecord(r);hmap[r.aux][r.date]=(hmap[r.aux][r.date]||0)+c.hours;});
-  const locStats={};
-  recs.forEach(r=>{
-    if(!r.loc)return;
-    if(!locStats[r.loc])locStats[r.loc]={};
-    if(!locStats[r.loc][r.aux])locStats[r.loc][r.aux]={shifts:0,hours:0};
-    const c=calcRecord(r);locStats[r.loc][r.aux].shifts++;locStats[r.loc][r.aux].hours+=c.hours;
-  });
-  const locRanks=Object.entries(locStats).map(([loc,ed])=>{
-    const emps=Object.entries(ed).map(([aux,v])=>({aux,fn:firstName(aux),avg:v.hours/v.shifts})).sort((a,b)=>a.avg-b.avg);
-    return{loc,best:emps[0],worst:emps[emps.length-1],avgAll:emps.reduce((s,e)=>s+e.avg,0)/emps.length};
-  }).sort((a,b)=>a.avgAll-b.avgAll);
-  const byShifts=[...empList].sort((a,b)=>b.shifts-a.shifts);
-  const byHours=[...empList].sort((a,b)=>b.hours-a.hours);
-
+  const sorted=applySort(rows,'payroll',{col:'total',dir:'desc',type:'number'});
+  const tot=sorted.reduce((acc,r)=>{
+    acc.regH+=r.regH;acc.regP+=r.regP;acc.otH+=r.otH;acc.otP+=r.otP;
+    acc.ot2H+=r.ot2H;acc.ot2P+=r.ot2P;
+    acc.wagesSubtotal+=r.wagesSubtotal;acc.floor+=r.floor;
+    acc.wagesPaid+=r.wagesPaid;acc.floorBonus+=r.floorBonus;
+    acc.adjustments+=r.adjustments;acc.total+=r.total;acc.shifts+=r.shifts;
+    return acc;
+  },{regH:0,regP:0,otH:0,otP:0,ot2H:0,ot2P:0,wagesSubtotal:0,floor:0,wagesPaid:0,floorBonus:0,adjustments:0,total:0,shifts:0});
+  const periodMonths=monthsBetween(dateFrom||(recs.length?recs.reduce((m,r)=>r.date<m?r.date:m,recs[0].date):new Date().toISOString().substring(0,10)),dateTo||new Date().toISOString().substring(0,10));
   sec.innerHTML=`
-  <div class="sec-hd"><h2>Employee Performance</h2><span style="font-size:11px;color:#8BA3C7">${monthLabel(S.period)}</span></div>
-  <div class="kgrid">
-    <div class="kc ok"><div class="kl">🥇 Best Avg Time</div><div class="kv" style="font-size:18px">${empList[0]?.firstName||'—'}</div><div class="ks">${empList[0]?fH(empList[0].avgHrs)+' avg/shift':''}</div></div>
-    <div class="kc"><div class="kl">Most Shifts</div><div class="kv" style="font-size:18px">${byShifts[0]?.firstName||'—'}</div><div class="ks">${byShifts[0]?.shifts||0} shifts</div></div>
-    <div class="kc"><div class="kl">Most Hours</div><div class="kv" style="font-size:18px">${byHours[0]?.firstName||'—'}</div><div class="ks">${fH(byHours[0]?.hours||0)}</div></div>
-    <div class="kc"><div class="kl">Team Total</div><div class="kv">${recs.length}</div><div class="ks">${empList.length} employees</div></div>
+  <div class="sec-hd">
+    <h2>Payroll Report <span style="font-size:12px;color:#8BA3C7;font-weight:400">— money owed to employees</span></h2>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-o btn-sm" onclick="navigate('export')">↓ Export</button>
+      <button class="btn btn-p btn-sm" onclick="window.print()">🖨 Print</button>
+    </div>
+  </div>
+  <div class="kgrid" style="grid-template-columns:repeat(4,1fr)">
+    <div class="kc"><div class="kl">Hourly Wages</div><div class="kv" style="font-size:18px">${fC(tot.wagesSubtotal)}</div><div class="ks">Reg ${fC(tot.regP)} + 1.5× ${fC(tot.otP)}</div></div>
+    <div class="kc"><div class="kl">Floor Top-ups</div><div class="kv" style="font-size:18px;color:#1565C0">${fC(tot.floorBonus)}</div><div class="ks">Base salary minimum guarantee</div></div>
+    <div class="kc"><div class="kl">2× (Holidays/Off)</div><div class="kv" style="font-size:18px;color:#880E4F">${fC(tot.ot2P)}</div><div class="ks">${tot.ot2H.toFixed(1)}h @ ${fC(RATE_OT2)}/h</div></div>
+    <div class="kc gold"><div class="kl">TOTAL TO PAY</div><div class="kv">${fC(tot.total)}</div><div class="ks">${periodMonths.toFixed(2)} months · adj ${fC(tot.adjustments)}</div></div>
+  </div>
+  <div class="card" style="padding:0">
+    <div style="padding:14px 18px 8px;display:flex;justify-content:space-between;align-items:center">
+      <span class="card-ti">Per Employee Breakdown</span>
+      <span style="font-size:11px;color:#8BA3C7">Cells highlighted yellow = floor topped up. Click + to add adjustment.</span>
+    </div>
+    <div class="tbl-wrap"><table>
+      <thead><tr>
+        ${thS('payroll','fname','Employee')}
+        ${thS('payroll','type','Type')}
+        ${thS('payroll','shifts','Shifts','number')}
+        ${thS('payroll','regH','Reg Hrs','number')}
+        ${thS('payroll','regP','Reg Pay','number')}
+        ${thS('payroll','otH','1.5× Hrs','number')}
+        ${thS('payroll','otP','1.5× Pay','number')}
+        ${thS('payroll','wagesSubtotal','Subtotal','number')}
+        ${thS('payroll','floor','Floor','number')}
+        ${thS('payroll','wagesPaid','Wages Paid','number')}
+        ${thS('payroll','ot2H','2× Hrs','number')}
+        ${thS('payroll','ot2P','2× Pay','number')}
+        ${thS('payroll','adjustments','Adj','number')}
+        ${thS('payroll','total','TOTAL','number')}
+        <th></th>
+      </tr></thead>
+      <tbody>${sorted.map(r=>{
+        const honored=r.honored;
+        return`<tr>
+          <td style="font-weight:500" title="${r.aux}${r.prorated?' — prorated from hire date '+fmt(r.hireDate):''}">${r.fname}${r.prorated?' <span style="font-size:9px;color:#1565C0" title="Prorated from hire date">⇲</span>':''}</td>
+          <td><span class="badge ${r.type==='FT'?'b-ft':'b-pt'}">${r.type}</span></td>
+          <td>${r.shifts}</td>
+          <td>${r.regH.toFixed(2)}</td><td>${fC(r.regP)}</td>
+          <td style="color:${honored?'#1B2A4A':'#8BA3C7'}">${r.otH.toFixed(2)}</td>
+          <td style="color:${honored?'#E65100':'#8BA3C7'}" title="${honored?'Honored — adds to total':'Demoted — absorbed by floor'}">${fC(r.otP)}${honored?'':' <span style="font-size:9px">⤓</span>'}</td>
+          <td>${fC(r.wagesSubtotal)}</td>
+          <td title="Base ${fC(r.base)} × ${r.months.toFixed(3)} months">${fC(r.floor)}</td>
+          <td style="font-weight:600;background:${r.floorBonus>0?'#FFF8E7':'transparent'}" title="${r.floorBonus>0?'Floor topped up by '+fC(r.floorBonus):'Subtotal exceeds floor — no top-up needed'}">${fC(r.wagesPaid)}</td>
+          <td style="color:#880E4F">${r.ot2H.toFixed(2)}</td>
+          <td style="color:#880E4F">${fC(r.ot2P)}</td>
+          <td style="cursor:pointer;color:${r.adjustments>0?'#2E7D32':r.adjustments<0?'#C62828':'#8BA3C7'}" onclick="showAdjustments('${r.aux.replace(/'/g,"\\'")}')">${r.adjustments?fC(r.adjustments):'—'}</td>
+          <td style="font-weight:700;color:#1B2A4A">${fC(r.total)}</td>
+          <td><button class="btn btn-o btn-sm" onclick="addAdjustment('${r.aux.replace(/'/g,"\\'")}')">+</button></td>
+        </tr>`;
+      }).join('')}</tbody>
+      <tfoot><tr>
+        <td colspan="2">TOTAL</td><td>${tot.shifts}</td>
+        <td>${tot.regH.toFixed(2)}</td><td>${fC(tot.regP)}</td>
+        <td>${tot.otH.toFixed(2)}</td><td>${fC(tot.otP)}</td>
+        <td>${fC(tot.wagesSubtotal)}</td>
+        <td>${fC(tot.floor)}</td>
+        <td>${fC(tot.wagesPaid)}</td>
+        <td>${tot.ot2H.toFixed(2)}</td><td>${fC(tot.ot2P)}</td>
+        <td>${fC(tot.adjustments)}</td>
+        <td style="color:#8B5E00">${fC(tot.total)}</td><td></td>
+      </tr></tfoot>
+    </table></div>
   </div>
   <div class="card">
-    <div class="card-hd"><span class="card-ti">Activity Heatmap</span>
+    <div class="card-hd"><span class="card-ti">How is this calculated?</span></div>
+    <div class="rate-info">
+      <strong>Per shift (hourly):</strong><br>
+      • Regular hours (≤8h/day): hours × <strong>$3.1250/hr</strong> ($500 ÷ 160h)<br>
+      • OT 1.5× hours (>8h/day): hours × <strong>$3.1250/hr</strong> (same rate — tracked separately)<br>
+      • OT 2× hours (Holiday or Day off): hours × <strong style="color:#C62828">$4.1667/hr</strong> ($500 ÷ 240h × 2)<br>
+      <br>
+      <strong>Per employee, per period:</strong><br>
+      1. <strong>Subtotal</strong> = Reg Pay + 1.5× Pay<br>
+      2. <strong>Floor</strong> = Monthly base × months in period &nbsp;<span style="color:#8BA3C7">(FT $500/mo · PT $250/mo · prorated for new hires)</span><br>
+      3. <strong>Wages Paid</strong> = max(Subtotal, Floor) — guarantees at least the monthly base<br>
+      4. <strong>TOTAL</strong> = Wages Paid + 2× Pay + Adjustments<br>
+      <br>
+      <span style="color:#8BA3C7">💡 If Subtotal &lt; Floor, the 1.5× hours are <em>"absorbed"</em> by the floor (shown in gray). 2× pay is always added on top regardless.</span>
+    </div>
+  </div>
+  ${adjs.length?`<div class="card" style="padding:0">
+    <div style="padding:14px 18px 8px"><span class="card-ti">All Adjustments in Period</span></div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Date</th><th>Employee</th><th>Label</th><th>Amount</th><th></th></tr></thead>
+      <tbody>${[...adjs].sort((a,b)=>b.date.localeCompare(a.date)).map(a=>`<tr>
+        <td>${fmt(a.date)}</td><td>${firstName(a.employee)}</td><td>${a.label||'—'}</td>
+        <td style="color:${a.amount>0?'#2E7D32':'#C62828'};font-weight:500">${fC(a.amount)}</td>
+        <td><button class="btn btn-d btn-sm" onclick="removeAdjustment('${a.id}')">✕</button></td>
+      </tr>`).join('')}</tbody>
+    </table></div>
+  </div>`:''}`;
+}
+function showAdjustments(emp){
+  const adjs=filteredAdjustments().filter(a=>a.employee===emp).sort((a,b)=>b.date.localeCompare(a.date));
+  showModal(`<h3>Adjustments — ${firstName(emp)}</h3>
+    ${adjs.length?`<div class="tbl-wrap"><table>
+      <thead><tr><th>Date</th><th>Label</th><th>Amount</th><th></th></tr></thead>
+      <tbody>${adjs.map(a=>`<tr><td>${fmt(a.date)}</td><td>${a.label||'—'}</td>
+        <td style="color:${a.amount>0?'#2E7D32':'#C62828'};font-weight:500">${fC(a.amount)}</td>
+        <td><button class="btn btn-d btn-sm" onclick="removeAdjustment('${a.id}');closeModal();">✕</button></td>
+      </tr>`).join('')}</tbody></table></div>`:'<p style="font-size:12px;color:#8BA3C7;text-align:center;padding:20px">No adjustments in this period.</p>'}
+    <div class="modal-actions">
+      <button class="btn btn-o" onclick="closeModal()">Close</button>
+      <button class="btn btn-p" onclick="closeModal();addAdjustment('${emp.replace(/'/g,"\\'")}')">+ Add Adjustment</button>
+    </div>`);
+}
+function addAdjustment(emp){
+  closeModal();
+  showModal(`<h3>Add Adjustment — ${firstName(emp)}</h3>
+    <div class="frow"><label>Date (must be in current filter range to count)</label>
+      <input type="date" id="adj-date" value="${new Date().toISOString().split('T')[0]}"></div>
+    <div class="frow"><label>Label</label>
+      <input type="text" id="adj-label" placeholder="e.g. Bonus, Transport, Advance" value="Bonus"></div>
+    <div class="frow"><label>Amount (USD — use negative for deductions/advances)</label>
+      <input type="number" id="adj-amount" step="0.01" placeholder="e.g. 50 or -100"></div>
+    <div class="modal-actions">
+      <button class="btn btn-o" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-p" onclick="saveAdjustment('${emp.replace(/'/g,"\\'")}')">Save</button>
+    </div>`);
+}
+function saveAdjustment(emp){
+  const date=document.getElementById('adj-date').value;
+  const label=document.getElementById('adj-label').value.trim();
+  const amount=parseFloat(document.getElementById('adj-amount').value);
+  if(!date||isNaN(amount))return toast('Date and amount required','err');
+  S.adjustments.push({id:'adj_'+Date.now()+'_'+Math.random().toString(36).slice(2,7),employee:emp,date,label,amount});
+  save();closeModal();refresh();toast('Adjustment added','ok');
+}
+function removeAdjustment(id){
+  if(!confirm('Remove this adjustment?'))return;
+  S.adjustments=S.adjustments.filter(a=>a.id!==id);
+  save();refresh();toast('Removed','ok');
+}
+
+// ── PERFORMANCE ──
+function setPerfTab(t){S.perfTab=t;renderPerformance();}
+function setPivot(key,val){S.pivot[key]=val;renderPerformance();}
+function renderPerformance(){
+  const sec=document.getElementById('sec-performance');
+  const allRecs=filtered();
+  const recs=allRecs.filter(r=>isCleaner(r.aux));
+  const exclMap={};
+  allRecs.filter(r=>!isCleaner(r.aux)).forEach(r=>{
+    const role=S.roster[r.aux]?.role||'other';
+    if(!exclMap[r.aux])exclMap[r.aux]={role,count:0};
+    exclMap[r.aux].count++;
+  });
+  const exclList=Object.entries(exclMap);
+  const exclNote=exclList.length?`<div style="background:#EEF1F8;border-radius:8px;padding:10px 14px;font-size:11px;color:#6B82A8;margin-bottom:14px;line-height:1.6">
+    ℹ️ <strong style="color:#1B2A4A">Excluded from cleaner stats:</strong> ${exclList.map(([n,d])=>`<span style="color:#1B2A4A;font-weight:500">${firstName(n)}</span> <span style="color:#8BA3C7">(${d.role}, ${d.count} shifts)</span>`).join(' · ')}
+    <br><span style="color:#8BA3C7">Update roles in <a href="#" onclick="navigate('employees');return false" style="color:#1B2A4A;text-decoration:underline">Employees</a> if this is wrong.</span>
+  </div>`:'';
+  if(!recs.length){sec.innerHTML=`<div class="sec-hd"><h2>Performance</h2></div>${exclNote}<div class="empty"><div class="empty-ico">★</div><p>No cleaner data for this period</p></div>`;return;}
+  const tabs=`<div class="tabs">
+    <div class="tab ${S.perfTab==='team'?'on':''}" onclick="setPerfTab('team')">👥 Team View (shareable)</div>
+    <div class="tab ${S.perfTab==='manager'?'on':''}" onclick="setPerfTab('manager')">⚙ Manager View (compare)</div>
+  </div>`;
+  if(S.perfTab==='team')sec.innerHTML=`<div class="sec-hd"><h2>Performance</h2><span style="font-size:11px;color:#8BA3C7">${monthLabel(S.period)}</span></div>${tabs}${exclNote}${renderPerfTeam(recs)}`;
+  else sec.innerHTML=`<div class="sec-hd"><h2>Performance</h2><span style="font-size:11px;color:#8BA3C7">${monthLabel(S.period)}</span></div>${tabs}${exclNote}${renderPerfManager(recs)}`;
+}
+
+function renderPerfTeam(recs){
+  // Per-listing avg time per employee
+  const empLocStats={}; // emp -> {loc -> {visits, hours}}
+  const locStats={}; // loc -> {visits, hours, byEmp}
+  const empOverall={}; // emp -> {visits, hours}
+  recs.forEach(r=>{
+    if(!r.loc)return;
+    const c=calcRecord(r);
+    if(!empLocStats[r.aux])empLocStats[r.aux]={};
+    if(!empLocStats[r.aux][r.loc])empLocStats[r.aux][r.loc]={visits:0,hours:0};
+    empLocStats[r.aux][r.loc].visits++;empLocStats[r.aux][r.loc].hours+=c.hours;
+    if(!locStats[r.loc])locStats[r.loc]={visits:0,hours:0,byEmp:{}};
+    locStats[r.loc].visits++;locStats[r.loc].hours+=c.hours;
+    if(!locStats[r.loc].byEmp[r.aux])locStats[r.loc].byEmp[r.aux]={visits:0,hours:0};
+    locStats[r.loc].byEmp[r.aux].visits++;locStats[r.loc].byEmp[r.aux].hours+=c.hours;
+    if(!empOverall[r.aux])empOverall[r.aux]={visits:0,hours:0,locs:new Set()};
+    empOverall[r.aux].visits++;empOverall[r.aux].hours+=c.hours;empOverall[r.aux].locs.add(r.loc);
+  });
+  // Each employee's avg per listing = sum of (per-loc avg) / #locs
+  const empAvg={};
+  Object.entries(empLocStats).forEach(([aux,locs])=>{
+    const avgs=Object.values(locs).map(l=>l.hours/l.visits);
+    empAvg[aux]={avgPerListing:avgs.reduce((s,v)=>s+v,0)/avgs.length,
+      totalHours:empOverall[aux].hours,visits:empOverall[aux].visits,locs:empOverall[aux].locs.size};
+  });
+  const empRanked=Object.entries(empAvg).map(([aux,d])=>({aux,fn:firstName(aux),...d})).sort((a,b)=>a.avgPerListing-b.avgPerListing);
+  // Per-listing team avg
+  const locRanked=Object.entries(locStats).map(([loc,d])=>{
+    const empAvgs=Object.entries(d.byEmp).map(([aux,v])=>({aux,fn:firstName(aux),avg:v.hours/v.visits}));
+    empAvgs.sort((a,b)=>a.avg-b.avg);
+    return{loc,visits:d.visits,teamAvg:d.hours/d.visits,best:empAvgs[0],worst:empAvgs.length>1?empAvgs[empAvgs.length-1]:null,empCount:empAvgs.length};
+  });
+  const locSorted=applySort(locRanked,'perf-loc',{col:'teamAvg',dir:'asc',type:'number'});
+  const teamAvgAll=Object.values(locStats).reduce((s,l)=>s+l.hours,0)/Object.values(locStats).reduce((s,l)=>s+l.visits,0);
+  // Heatmap: rows=employees, cols=top listings, cells=avg time
+  const allLocs=Object.keys(locStats).sort();
+  const maxLocs=Math.min(allLocs.length,15);
+  const topLocs=Object.entries(locStats).sort((a,b)=>b[1].visits-a[1].visits).slice(0,maxLocs).map(([l])=>l);
+  
+  return`
+  <!-- TOP HERO STAT -->
+  <div class="perf-card">
+    <h3>🥇 Top Performer this period</h3>
+    <div class="big">${empRanked[0]?.fn||'—'}</div>
+    <div class="sub">Average ${empRanked[0]?fH(empRanked[0].avgPerListing):'—'} per listing · ${empRanked[0]?.visits||0} listings cleaned · works at ${empRanked[0]?.locs||0} locations</div>
+  </div>
+  
+  <!-- KPI ROW -->
+  <div class="kgrid">
+    <div class="kc gold"><div class="kl">🥈 2nd Place</div><div class="kv" style="font-size:18px">${empRanked[1]?.fn||'—'}</div><div class="ks">${empRanked[1]?fH(empRanked[1].avgPerListing):''} avg</div></div>
+    <div class="kc gold"><div class="kl">🥉 3rd Place</div><div class="kv" style="font-size:18px">${empRanked[2]?.fn||'—'}</div><div class="ks">${empRanked[2]?fH(empRanked[2].avgPerListing):''} avg</div></div>
+    <div class="kc"><div class="kl">Team Avg / Listing</div><div class="kv">${fH(teamAvgAll)}</div><div class="ks">across ${Object.keys(locStats).length} listings</div></div>
+    <div class="kc"><div class="kl">Total Listings Cleaned</div><div class="kv">${recs.length}</div><div class="ks">${empRanked.length} cleaners</div></div>
+  </div>
+  
+  <!-- EMPLOYEE LEADERBOARD BAR CHART -->
+  <div class="card">
+    <div class="card-hd"><span class="card-ti">🏆 Cleaner Leaderboard — average time per listing (lower = faster)</span></div>
+    <div class="bar-wrap">${empRanked.map((e,i)=>{
+      const pct=Math.min(100,(e.avgPerListing/Math.max(...empRanked.map(x=>x.avgPerListing)))*100);
+      const cls=i===0?'green':i<3?'':e.avgPerListing>teamAvgAll*1.1?'red':e.avgPerListing>teamAvgAll?'amber':'';
+      const medal=i===0?'🥇 ':i===1?'🥈 ':i===2?'🥉 ':'';
+      return`<div class="bar-row">
+        <div class="bar-label" style="font-weight:${i<3?'600':'400'}">${medal}${e.fn}</div>
+        <div class="bar-track"><div class="bar-fill ${cls}" style="width:${pct.toFixed(1)}%"></div></div>
+        <div class="bar-val">${fH(e.avgPerListing)} · ${e.visits} listings</div>
+      </div>`;
+    }).join('')}</div>
+  </div>
+  
+  <!-- HEATMAP: Avg time per listing by employee -->
+  <div class="card">
+    <div class="card-hd"><span class="card-ti">Average Time per Listing — by Cleaner</span>
       <div class="legend">
-        <span class="leg-item"><span class="leg-dot hm0"></span>0h</span>
-        <span class="leg-item"><span class="leg-dot hm1"></span>1–4h</span>
-        <span class="leg-item"><span class="leg-dot hm2"></span>4–6h</span>
-        <span class="leg-item"><span class="leg-dot hm3"></span>6–8h</span>
-        <span class="leg-item"><span class="leg-dot hm4"></span>8h+</span>
+        <span class="leg-item"><span class="leg-dot" style="background:#2E7D32"></span>Below team avg</span>
+        <span class="leg-item"><span class="leg-dot" style="background:#FFA726"></span>Near team avg</span>
+        <span class="leg-item"><span class="leg-dot" style="background:#C62828"></span>Above team avg</span>
+        <span class="leg-item"><span class="leg-dot" style="background:#F0F3F8"></span>Not visited</span>
       </div>
     </div>
     <div class="hm-wrap"><table class="hm-table">
-      <thead><tr><th style="width:80px"></th>${allDates.map(d=>`<th title="${fmt(d)}">${d.split('-')[2]}</th>`).join('')}</tr></thead>
-      <tbody>${empList.map(e=>`<tr>
-        <td class="hm-name">${e.firstName}</td>
-        ${allDates.map(d=>{const h=hmap[e.aux]?.[d]||0;const cls=h===0?'hm0':h<4?'hm1':h<6?'hm2':h<8?'hm3':'hm4';
-          return`<td><span class="hm-cell ${cls}" title="${e.firstName}: ${fmt(d)} — ${h.toFixed(1)}h"></span></td>`;}).join('')}
+      <thead><tr><th style="width:80px"></th>${topLocs.map(l=>`<th class="rotated" title="${l}">${l.length>14?l.substring(0,14)+'…':l}</th>`).join('')}</tr></thead>
+      <tbody>${empRanked.map(e=>`<tr>
+        <td class="hm-name">${e.fn}</td>
+        ${topLocs.map(l=>{
+          const s=empLocStats[e.aux]?.[l];
+          if(!s)return`<td><span class="hm-cell empty"></span></td>`;
+          const avg=s.hours/s.visits;
+          const teamAvg=locStats[l].hours/locStats[l].visits;
+          const ratio=avg/teamAvg;
+          const bg=ratio<0.9?'#2E7D32':ratio<1.05?'#66BB6A':ratio<1.2?'#FFA726':'#C62828';
+          return`<td><span class="hm-cell" style="background:${bg}" title="${e.fn} @ ${l}: avg ${fH(avg)} (team avg ${fH(teamAvg)}) — ${s.visits} visits">${avg.toFixed(1)}</span></td>`;
+        }).join('')}
       </tr>`).join('')}</tbody>
     </table></div>
+    ${allLocs.length>maxLocs?`<p style="font-size:11px;color:#8BA3C7;margin-top:8px;text-align:center">Showing top ${maxLocs} listings by visit count. ${allLocs.length-maxLocs} more in Manager View.</p>`:''}
   </div>
+  
+  <!-- BEST/WORST PER LOCATION -->
   <div class="card" style="padding:0">
-    <div style="padding:14px 18px 8px"><span class="card-ti">Employee Rankings — Average Hours/Shift (lower = more efficient)</span></div>
+    <div style="padding:14px 18px 8px"><span class="card-ti">Best & Worst Average Time by Listing</span></div>
     <div class="tbl-wrap"><table>
-      <thead><tr><th>#</th><th>Employee</th><th>Type</th><th>Shifts</th><th>Total Hrs</th><th>Avg Hrs/Shift</th><th>Total Pay</th></tr></thead>
-      <tbody>${empList.map((e,i)=>{
-        const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':`${i+1}`;
-        const ro=S.roster[e.aux]||{type:'FT'};
-        return`<tr>
-          <td style="font-weight:600">${medal}</td>
-          <td style="font-weight:${i<3?'600':'400'}">${e.firstName}</td>
-          <td><span class="badge ${ro.type==='FT'?'b-ft':'b-pt'}">${ro.type}</span></td>
-          <td>${e.shifts}</td><td>${fH(e.hours)}</td>
-          <td style="font-weight:600;color:${i===0?'#2E7D32':i===empList.length-1?'#C62828':'#1B2A4A'}">${fH(e.avgHrs)}</td>
-          <td>${fC(e.pay)}</td>
-        </tr>`;
-      }).join('')}</tbody>
-    </table></div>
-  </div>
-  <div class="card" style="padding:0">
-    <div style="padding:14px 18px 8px"><span class="card-ti">Best & Worst Average Time by Location</span></div>
-    <div class="tbl-wrap"><table>
-      <thead><tr><th>Location</th><th>Team Avg</th><th>🟢 Best Employee</th><th>Avg</th><th>🔴 Needs Improvement</th><th>Avg</th></tr></thead>
-      <tbody>${locRanks.map(l=>`<tr>
-        <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500" title="${l.loc}">${l.loc}</td>
-        <td>${fH(l.avgAll)}</td>
+      <thead><tr>
+        ${thS('perf-loc','loc','Listing')}
+        ${thS('perf-loc','visits','Visits','number')}
+        ${thS('perf-loc','teamAvg','Team Avg','number')}
+        <th>🟢 Fastest</th><th>Avg</th>
+        <th>🔴 Slowest</th><th>Avg</th>
+      </tr></thead>
+      <tbody>${locSorted.map(l=>`<tr>
+        <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500" title="${l.loc}">${l.loc}</td>
+        <td>${l.visits}</td><td>${fH(l.teamAvg)}</td>
         <td style="color:#2E7D32;font-weight:600">${l.best?.fn||'—'}</td>
         <td>${l.best?fH(l.best.avg):'—'}</td>
-        <td style="color:#C62828;font-weight:600">${l.worst?.fn!==l.best?.fn?l.worst?.fn:'—'}</td>
-        <td>${l.worst?.fn!==l.best?.fn?fH(l.worst.avg):'—'}</td>
+        <td style="color:#C62828;font-weight:600">${l.worst?l.worst.fn:'—'}</td>
+        <td>${l.worst?fH(l.worst.avg):'—'}</td>
       </tr>`).join('')}</tbody>
     </table></div>
+  </div>`;
+}
+
+function renderPerfManager(recs){
+  // Pivot table builder
+  const dimensions={
+    employee:{label:'Employee',getKey:r=>firstName(r.aux)},
+    listing:{label:'Listing',getKey:r=>r.loc||'(Unassigned)'},
+    month:{label:'Month',getKey:r=>r.date.substring(0,7)},
+    none:{label:'(None — totals only)',getKey:r=>'Total'}
+  };
+  const metrics={
+    avgPerListing:{label:'Avg time per listing',calc:items=>{
+      const byLoc={};
+      items.forEach(r=>{const c=calcRecord(r);if(!byLoc[r.loc])byLoc[r.loc]={h:0,n:0};byLoc[r.loc].h+=c.hours;byLoc[r.loc].n++;});
+      const avgs=Object.values(byLoc).map(v=>v.h/v.n);
+      return avgs.length?avgs.reduce((s,v)=>s+v,0)/avgs.length:0;
+    },fmt:fH},
+    avgPerShift:{label:'Avg time per shift',calc:items=>{
+      const tot=items.reduce((s,r)=>s+calcRecord(r).hours,0);return items.length?tot/items.length:0;
+    },fmt:fH},
+    totalHours:{label:'Total hours',calc:items=>items.reduce((s,r)=>s+calcRecord(r).hours,0),fmt:fH},
+    shifts:{label:'# Shifts',calc:items=>items.length,fmt:n=>n.toFixed(0)},
+    listings:{label:'# Listings (unique)',calc:items=>new Set(items.map(r=>r.loc)).size,fmt:n=>n.toFixed(0)},
+    pay:{label:'Total pay',calc:items=>items.reduce((s,r)=>s+calcRecord(r).pay,0),fmt:fC}
+  };
+  const{rows:rDim,cols:cDim,metric}=S.pivot;
+  const M=metrics[metric]||metrics.avgPerListing;
+  const grid={};const rowSet=new Set(),colSet=new Set();
+  recs.forEach(r=>{
+    const rk=dimensions[rDim].getKey(r),ck=dimensions[cDim].getKey(r);
+    rowSet.add(rk);colSet.add(ck);
+    if(!grid[rk])grid[rk]={};
+    if(!grid[rk][ck])grid[rk][ck]=[];
+    grid[rk][ck].push(r);
+  });
+  const rowsArr=[...rowSet].sort();
+  const colsArr=[...colSet].sort();
+  // Compute values
+  const cellVals={};const rowTotals={};const colTotals={};
+  rowsArr.forEach(rk=>{
+    cellVals[rk]={};
+    let allRow=[];
+    colsArr.forEach(ck=>{const items=grid[rk]?.[ck]||[];cellVals[rk][ck]=items.length?M.calc(items):null;allRow=allRow.concat(items);});
+    rowTotals[rk]=allRow.length?M.calc(allRow):null;
+  });
+  colsArr.forEach(ck=>{
+    let allCol=[];
+    rowsArr.forEach(rk=>{const items=grid[rk]?.[ck]||[];allCol=allCol.concat(items);});
+    colTotals[ck]=allCol.length?M.calc(allCol):null;
+  });
+  const grandTotal=M.calc(recs);
+  // Find min/max for color
+  let allVals=[];
+  Object.values(cellVals).forEach(row=>Object.values(row).forEach(v=>{if(v!==null)allVals.push(v);}));
+  const minV=Math.min(...allVals),maxV=Math.max(...allVals);
+  const colorCell=(v)=>{
+    if(v===null)return'#F0F3F8';
+    if(maxV===minV)return'#B5D4F4';
+    const ratio=(v-minV)/(maxV-minV);
+    // For "lower is better" metrics (avg time), invert
+    const inverted=['avgPerListing','avgPerShift'].includes(metric);
+    const r=inverted?(1-ratio):ratio;
+    if(r<0.25)return'#9FE1CB';if(r<0.5)return'#5DCAA5';if(r<0.75)return'#FAC775';return'#F09595';
+  };
+  
+  return`
+  <div class="card">
+    <div class="card-hd"><span class="card-ti">⚙ Custom Pivot Comparison</span>
+      <span style="font-size:11px;color:#8BA3C7">Mix and match dimensions to compare</span>
+    </div>
+    <div class="pivot-controls">
+      <div><label>Rows</label><select onchange="setPivot('rows',this.value)">
+        ${Object.entries(dimensions).filter(([k])=>k!=='none').map(([k,d])=>`<option value="${k}" ${rDim===k?'selected':''}>${d.label}</option>`).join('')}
+      </select></div>
+      <div><label>Columns</label><select onchange="setPivot('cols',this.value)">
+        ${Object.entries(dimensions).map(([k,d])=>`<option value="${k}" ${cDim===k?'selected':''}>${d.label}</option>`).join('')}
+      </select></div>
+      <div><label>Metric</label><select onchange="setPivot('metric',this.value)">
+        ${Object.entries(metrics).map(([k,m])=>`<option value="${k}" ${metric===k?'selected':''}>${m.label}</option>`).join('')}
+      </select></div>
+    </div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th style="background:#1B2A4A;color:#fff">${dimensions[rDim].label} \\ ${dimensions[cDim].label}</th>
+        ${colsArr.map(c=>`<th style="text-align:center" title="${c}">${c.length>16?c.substring(0,16)+'…':c}</th>`).join('')}
+        ${cDim!=='none'?'<th style="text-align:center;background:#243558;color:#fff">Total</th>':''}
+      </tr></thead>
+      <tbody>${rowsArr.map(rk=>`<tr>
+        <td style="font-weight:500;background:#F4F6FB" title="${rk}">${rk.length>22?rk.substring(0,22)+'…':rk}</td>
+        ${colsArr.map(ck=>{const v=cellVals[rk][ck];return`<td style="background:${colorCell(v)};text-align:center;color:#1B2A4A;font-weight:500" title="${dimensions[rDim].label}: ${rk} | ${dimensions[cDim].label}: ${ck}">${v===null?'—':M.fmt(v)}</td>`;}).join('')}
+        ${cDim!=='none'?`<td style="font-weight:600;background:#EEF1F8;text-align:center">${rowTotals[rk]===null?'—':M.fmt(rowTotals[rk])}</td>`:''}
+      </tr>`).join('')}</tbody>
+      ${cDim!=='none'?`<tfoot><tr>
+        <td>Total</td>
+        ${colsArr.map(ck=>`<td style="text-align:center">${colTotals[ck]===null?'—':M.fmt(colTotals[ck])}</td>`).join('')}
+        <td style="text-align:center;color:#8B5E00">${M.fmt(grandTotal)}</td>
+      </tr></tfoot>`:''}
+    </table></div>
+    <p style="font-size:11px;color:#8BA3C7;margin-top:10px;line-height:1.5">
+      💡 <strong>Tip:</strong> Try Rows=Employee, Columns=Month, Metric=Avg time per listing — to see who's getting faster.<br>
+      Or Rows=Listing, Columns=Employee, Metric=Avg time per shift — to find the right cleaner per property.
+    </p>
   </div>`;
 }
 
@@ -652,112 +1225,161 @@ function renderPerformance(){
 function renderCostCenter(){
   const sec=document.getElementById('sec-costcenter');
   const recs=filtered();
-  if(!recs.length){sec.innerHTML='<div class="empty"><div class="empty-ico">$</div><p>No data for this period</p></div>';return;}
+  if(!recs.length){sec.innerHTML='<div class="sec-hd"><h2>Cost Centers</h2></div><div class="empty"><div class="empty-ico">⌂</div><p>No data for this period</p></div>';return;}
   const ccMap={};
   recs.forEach(r=>{
     const l=r.loc||'(Sin asignar)';
-    if(!ccMap[l])ccMap[l]={shifts:0,hours:0,pay:0,regH:0,otH:0,ot2H:0,emps:new Set()};
+    if(!ccMap[l])ccMap[l]={loc:l,shifts:0,hours:0,pay:0,regH:0,otH:0,ot2H:0,emps:new Set()};
     const c=calcRecord(r);
     ccMap[l].shifts++;ccMap[l].hours+=c.hours;ccMap[l].pay+=c.pay;ccMap[l].emps.add(r.aux);
-    if(c.otType.startsWith('2x'))ccMap[l].ot2H+=c.hours;
-    else if(c.otType==='1.5x')ccMap[l].otH+=c.hours;
-    else ccMap[l].regH+=c.hours;
+    ccMap[l].regH+=c.regH;ccMap[l].otH+=c.otH;ccMap[l].ot2H+=c.ot2H;
   });
-  const ccList=Object.entries(ccMap).sort((a,b)=>b[1].pay-a[1].pay);
-  const totP=ccList.reduce((s,[,d])=>s+d.pay,0);
-  const mxP=ccList[0]?.[1].pay||1;
-  const locEmp={};
+  const ccArr=Object.values(ccMap).map(d=>({...d,empCount:d.emps.size}));
+  const totP=ccArr.reduce((s,d)=>s+d.pay,0);
+  ccArr.forEach(d=>d.pct=totP?d.pay/totP*100:0);
+  const sorted=applySort(ccArr,'cc',{col:'pay',dir:'desc',type:'number'});
+  const mxP=Math.max(...ccArr.map(d=>d.pay))||1;
+  // Heatmap: employees x locations
+  const empSet=new Set();
+  recs.forEach(r=>empSet.add(r.aux));
+  const empArr=[...empSet].sort();
+  const locArr=ccArr.map(d=>d.loc).sort();
+  const mat={};let maxH=0;
   recs.forEach(r=>{
     const l=r.loc||'(Sin asignar)';
-    if(!locEmp[l])locEmp[l]={};
-    if(!locEmp[l][r.aux])locEmp[l][r.aux]={shifts:0,hours:0,pay:0};
-    const c=calcRecord(r);locEmp[l][r.aux].shifts++;locEmp[l][r.aux].hours+=c.hours;locEmp[l][r.aux].pay+=c.pay;
+    if(!mat[r.aux])mat[r.aux]={};
+    const c=calcRecord(r);
+    mat[r.aux][l]=(mat[r.aux][l]||0)+c.hours;
+    if(mat[r.aux][l]>maxH)maxH=mat[r.aux][l];
   });
+  
   sec.innerHTML=`
   <div class="sec-hd"><h2>Cost Centers</h2><span style="font-size:12px;color:#8BA3C7">Total: <strong style="color:#1B2A4A">${fC(totP)}</strong></span></div>
+  
   <div class="card">
-    <div class="card-hd"><span class="card-ti">Cost Distribution</span></div>
-    <div class="bar-wrap">${ccList.map(([loc,d])=>`
+    <div class="card-hd"><span class="card-ti">Cost Distribution by Listing</span></div>
+    <div class="bar-wrap">${[...sorted].map(d=>`
       <div class="bar-row">
-        <div class="bar-label" title="${loc}">${loc}</div>
+        <div class="bar-label" title="${d.loc}">${d.loc}</div>
         <div class="bar-track"><div class="bar-fill" style="width:${(d.pay/mxP*100).toFixed(1)}%"></div></div>
-        <div class="bar-val">${fC(d.pay)} — ${((d.pay/totP)*100).toFixed(1)}%</div>
+        <div class="bar-val">${fC(d.pay)} — ${d.pct.toFixed(1)}%</div>
       </div>`).join('')}</div>
   </div>
+  
   <div class="card" style="padding:0">
     <div style="padding:14px 18px 8px"><span class="card-ti">Summary Table</span></div>
     <div class="tbl-wrap"><table>
-      <thead><tr><th>Location</th><th>Shifts</th><th>Employees</th><th>Total Hrs</th><th>Regular Hrs</th><th>OT 1.5× Hrs</th><th>OT 2× Hrs</th><th>Total Cost</th><th>% of Total</th></tr></thead>
-      <tbody>${ccList.map(([loc,d])=>`<tr>
-        <td style="font-weight:500;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${loc}">${loc}</td>
-        <td>${d.shifts}</td><td>${d.emps.size}</td><td>${fH(d.hours)}</td>
+      <thead><tr>
+        ${thS('cc','loc','Listing')}
+        ${thS('cc','shifts','Shifts','number')}
+        ${thS('cc','empCount','Employees','number')}
+        ${thS('cc','hours','Total Hrs','number')}
+        ${thS('cc','regH','Reg Hrs','number')}
+        ${thS('cc','otH','OT 1.5×','number')}
+        ${thS('cc','ot2H','OT 2×','number')}
+        ${thS('cc','pay','Total Cost','number')}
+        ${thS('cc','pct','% of Total','number')}
+      </tr></thead>
+      <tbody>${sorted.map(d=>`<tr>
+        <td style="font-weight:500;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${d.loc}">${d.loc}</td>
+        <td>${d.shifts}</td><td>${d.empCount}</td><td>${fH(d.hours)}</td>
         <td>${fH(d.regH)}</td><td>${fH(d.otH)}</td><td>${fH(d.ot2H)}</td>
-        <td style="font-weight:600">${fC(d.pay)}</td><td>${((d.pay/totP)*100).toFixed(1)}%</td>
+        <td style="font-weight:600">${fC(d.pay)}</td><td>${d.pct.toFixed(1)}%</td>
       </tr>`).join('')}</tbody>
       <tfoot><tr>
-        <td>TOTAL</td><td>${ccList.reduce((s,[,d])=>s+d.shifts,0)}</td>
-        <td>${new Set(recs.map(r=>r.aux)).size}</td>
-        <td>${fH(ccList.reduce((s,[,d])=>s+d.hours,0))}</td>
-        <td>${fH(ccList.reduce((s,[,d])=>s+d.regH,0))}</td>
-        <td>${fH(ccList.reduce((s,[,d])=>s+d.otH,0))}</td>
-        <td>${fH(ccList.reduce((s,[,d])=>s+d.ot2H,0))}</td>
+        <td>TOTAL</td>
+        <td>${ccArr.reduce((s,d)=>s+d.shifts,0)}</td>
+        <td>${empArr.length}</td>
+        <td>${fH(ccArr.reduce((s,d)=>s+d.hours,0))}</td>
+        <td>${fH(ccArr.reduce((s,d)=>s+d.regH,0))}</td>
+        <td>${fH(ccArr.reduce((s,d)=>s+d.otH,0))}</td>
+        <td>${fH(ccArr.reduce((s,d)=>s+d.ot2H,0))}</td>
         <td>${fC(totP)}</td><td>100%</td>
       </tr></tfoot>
     </table></div>
   </div>
+  
   <div class="card">
-    <div class="card-hd"><span class="card-ti">Employee Breakdown by Location</span></div>
-    ${ccList.map(([loc])=>`
-      <div style="margin-bottom:16px">
-        <div style="font-size:12px;font-weight:600;color:#1B2A4A;padding:6px 0;border-bottom:1px solid #EEF1F8;margin-bottom:6px">${loc}</div>
-        <div class="tbl-wrap"><table>
-          <thead><tr><th>Employee</th><th>Shifts</th><th>Hours</th><th>Pay</th><th>Avg Hrs/Shift</th></tr></thead>
-          <tbody>${Object.entries(locEmp[loc]||{}).sort((a,b)=>b[1].hours-a[1].hours).map(([aux,d])=>`<tr>
-            <td>${firstName(aux)}</td><td>${d.shifts}</td><td>${fH(d.hours)}</td><td>${fC(d.pay)}</td>
-            <td>${fH(d.hours/d.shifts)}</td>
-          </tr>`).join('')}</tbody>
-        </table></div>
-      </div>`).join('')}
+    <div class="card-hd"><span class="card-ti">Hours per Employee × Listing</span>
+      <div class="legend">
+        <span class="leg-item"><span class="leg-dot" style="background:#EEF1F8"></span>0h</span>
+        <span class="leg-item"><span class="leg-dot" style="background:#B5D4F4"></span>Light</span>
+        <span class="leg-item"><span class="leg-dot" style="background:#378ADD"></span>Medium</span>
+        <span class="leg-item"><span class="leg-dot" style="background:#1B2A4A"></span>Heavy</span>
+      </div>
+    </div>
+    <div class="hm-wrap"><table class="hm-table">
+      <thead><tr><th style="width:80px"></th>${locArr.map(l=>`<th class="rotated" title="${l}">${l.length>14?l.substring(0,14)+'…':l}</th>`).join('')}<th class="rotated" style="background:#243558;color:#fff">TOTAL</th></tr></thead>
+      <tbody>${empArr.map(e=>{
+        const rowTot=Object.values(mat[e]||{}).reduce((s,v)=>s+v,0);
+        return`<tr>
+          <td class="hm-name">${firstName(e)}</td>
+          ${locArr.map(l=>{
+            const v=mat[e]?.[l]||0;
+            if(v===0)return`<td><span class="hm-cell empty"></span></td>`;
+            const ratio=v/maxH;
+            const bg=ratio<0.25?'#B5D4F4':ratio<0.5?'#378ADD':ratio<0.75?'#185FA5':'#1B2A4A';
+            return`<td><span class="hm-cell" style="background:${bg}" title="${firstName(e)} @ ${l}: ${fH(v)}">${v.toFixed(0)}</span></td>`;
+          }).join('')}
+          <td><span class="hm-cell" style="background:#243558">${rowTot.toFixed(0)}</span></td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table></div>
   </div>`;
 }
 
 // ── EMPLOYEES ──
+function isCleaner(empName){
+  const r=S.roster[empName];
+  return!r||!r.role||r.role==='cleaner';
+}
 function renderEmployees(){
   const sec=document.getElementById('sec-employees');
   const names=Object.keys(S.roster).sort();
+  const roleBadges={cleaner:'b-reg',operations:'b-15',laundry:'b-2x',other:'b-pt'};
+  const roleLabels={cleaner:'Cleaner',operations:'Operations',laundry:'Laundry',other:'Other'};
   sec.innerHTML=`
   <div class="sec-hd"><h2>Employee Roster</h2>
     <button class="btn btn-p btn-sm" onclick="showAddEmpModal()">+ Add Employee</button>
   </div>
   <div class="card" style="padding:0">
     ${names.length?`<div class="tbl-wrap"><table>
-      <thead><tr><th>Full Name</th><th>Display</th><th>Type</th><th>Monthly Salary</th><th>Hourly Rate</th><th>FT/PT</th><th>Actions</th></tr></thead>
+      <thead><tr><th>Full Name</th><th>Display</th><th>Role</th><th>Type</th><th>Monthly Salary</th><th>Hourly Rate</th><th>Actions</th></tr></thead>
       <tbody>${names.map(aux=>{
-        const e=S.roster[aux]||{type:'FT',salary:500};
-        const rate=(e.salary||500)/240;
-        return`<tr>
-          <td style="font-weight:500">${aux}</td>
-          <td style="color:#8BA3C7">${firstName(aux)}</td>
+        const e=S.roster[aux]||{type:'FT',salary:500,role:'cleaner'};
+        const role=e.role||'cleaner';
+        return`<tr><td style="font-weight:500">${aux}</td><td style="color:#8BA3C7">${firstName(aux)}</td>
+          <td><span class="badge ${roleBadges[role]||'b-pt'}">${roleLabels[role]||role}</span></td>
           <td><span class="badge ${e.type==='FT'?'b-ft':'b-pt'}">${e.type}</span></td>
-          <td>${fC(e.salary||500)}</td>
-          <td>${fC(rate)}/h</td>
-          <td><label class="tog"><input type="checkbox" ${e.type==='FT'?'checked':''} onchange="toggleEmpType('${aux.replace(/'/g,"\\'")}')"><span class="sl"></span></label>
-          <span style="font-size:10px;color:#8BA3C7;margin-left:5px">${e.type==='FT'?'FT':'PT'}</span></td>
+          <td>${fC(e.salary||500)}</td><td>${fC((e.salary||500)/240)}/h</td>
           <td><div style="display:flex;gap:4px">
             <button class="btn btn-o btn-sm" onclick="editEmployee('${aux.replace(/'/g,"\\'")}')">✎ Edit</button>
             <button class="btn btn-d btn-sm" onclick="removeEmployee('${aux.replace(/'/g,"\\'")}')">✕</button>
           </div></td>
         </tr>`;
       }).join('')}</tbody>
-    </table></div>`:'<div class="empty"><p>No employees in roster.<br>Sync Sheets or add manually.</p></div>'}
+    </table></div>`:'<div class="empty"><p>No employees in roster yet.</p></div>'}
+  </div>
+  <div class="card">
+    <div class="card-hd"><span class="card-ti">Roles</span></div>
+    <div class="rate-info">
+      <strong style="color:#1B5E20">Cleaner</strong> — counted in Performance stats<br>
+      <strong style="color:#E65100">Operations</strong> — paid but excluded from Performance (e.g. driver, supervisor)<br>
+      <strong style="color:#880E4F">Laundry</strong> — paid but excluded from Performance (laundry coordinator)<br>
+      <strong>Other</strong> — paid but excluded from Performance
+    </div>
   </div>
   <div class="card">
     <div class="card-hd"><span class="card-ti">Rate Reference</span></div>
     <div class="rate-info">
-      Base salary: <strong>$500/month ÷ 240h = $2.0833/hr</strong><br>
-      Regular (up to 8h/day): <strong>$2.0833/hr</strong><br>
-      Overtime 1.5× (after 8h/day): <strong style="color:#E65100">$3.1250/hr</strong><br>
-      Holiday / Day off 2×: <strong style="color:#C62828">$4.1667/hr</strong>
+      Base salary FT: <strong>$500/month</strong> · PT: <strong>$250/month</strong><br>
+      Regular hours (≤8h/day): <strong>$3.1250/hr</strong> &nbsp;<span style="color:#8BA3C7">($500 ÷ 160h)</span><br>
+      Overtime 1.5× (>8h/day): <strong style="color:#E65100">$3.1250/hr</strong> &nbsp;<span style="color:#8BA3C7">(same rate, tracked separately)</span><br>
+      Holiday / Day off 2×: <strong style="color:#C62828">$4.1667/hr</strong> &nbsp;<span style="color:#8BA3C7">($500 ÷ 240h × 2)</span><br>
+      <br>
+      <strong>Floor:</strong> Monthly base × months in period.<br>
+      <strong>Wages Paid</strong> = max(Reg Pay + 1.5× Pay, Floor). 2× pay always added on top.<br>
+      <span style="color:#8BA3C7">For new hires: floor is prorated from hire date forward.</span>
     </div>
   </div>`;
 }
@@ -773,17 +1395,14 @@ function renderHolidays(){
   </div>
   ${years.map(y=>`<div class="card" style="padding:0;margin-bottom:12px">
     <div style="padding:12px 18px;border-bottom:1px solid #F0F3F8;display:flex;justify-content:space-between;align-items:center">
-      <span class="card-ti">${y}</span>
-      <span style="font-size:11px;color:#8BA3C7">${sorted.filter(h=>h.date.startsWith(y)).length} holidays</span>
+      <span class="card-ti">${y}</span><span style="font-size:11px;color:#8BA3C7">${sorted.filter(h=>h.date.startsWith(y)).length} holidays</span>
     </div>
     <table>
       <thead><tr><th>Date</th><th>Holiday</th><th>Day</th><th></th></tr></thead>
       <tbody>${sorted.filter(h=>h.date.startsWith(y)).map(h=>{
         const d=new Date(h.date+'T12:00:00');
         return`<tr><td>${fmt(h.date)}</td><td>${h.name}</td>
-          <td style="color:#8BA3C7">
-            ${ ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()]}
-          </td>
+          <td style="color:#8BA3C7">${['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()]}</td>
           <td><button class="btn btn-d btn-sm" onclick="removeHoliday('${h.date}','${h.name.replace(/'/g,"\\'")}')">✕</button></td>
         </tr>`;
       }).join('')}</tbody>
@@ -793,25 +1412,24 @@ function renderHolidays(){
 
 // ── EXPORT ──
 function renderExport(){
-  const recs=filtered();
-  const sz=JSON.stringify({r:S.records,ro:S.roster,h:S.holidays}).length;
+  const sz=JSON.stringify({r:S.records,ro:S.roster,h:S.holidays,a:S.adjustments}).length;
   document.getElementById('sec-export').innerHTML=`
   <div class="sec-hd"><h2>Export</h2></div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px">
     <div class="card">
       <div class="card-hd"><span class="card-ti">Excel (.xlsx)</span></div>
-      <p style="font-size:12px;color:#8BA3C7;margin-bottom:12px;line-height:1.6">Exports Raw Data, Employee Summary, and Cost Centers as separate sheets.</p>
+      <p style="font-size:12px;color:#8BA3C7;margin-bottom:12px;line-height:1.6">Raw Data, Payroll Report, Employee Summary, Cost Centers, Adjustments — separate sheets.</p>
       <button class="btn btn-p" onclick="exportExcel()">↓ Download Excel</button>
     </div>
     <div class="card">
       <div class="card-hd"><span class="card-ti">PDF / Print</span></div>
-      <p style="font-size:12px;color:#8BA3C7;margin-bottom:12px;line-height:1.6">Uses browser print dialog. Select "Save as PDF" as the printer.</p>
+      <p style="font-size:12px;color:#8BA3C7;margin-bottom:12px;line-height:1.6">Print the current view. Save as PDF in the print dialog.</p>
       <button class="btn btn-o" onclick="window.print()">🖨 Print / PDF</button>
     </div>
   </div>
   <div class="card">
     <div class="card-hd"><span class="card-ti">Data Backup (JSON)</span></div>
-    <p style="font-size:12px;color:#8BA3C7;margin-bottom:12px;line-height:1.6">Export all records + annotations + roster as a JSON file. Use this to back up your data or migrate between browsers.</p>
+    <p style="font-size:12px;color:#8BA3C7;margin-bottom:12px;line-height:1.6">Export everything (records, annotations, roster, holidays, adjustments) as JSON.</p>
     <div style="display:flex;gap:8px">
       <button class="btn btn-o" onclick="exportJSON()">↓ Export Backup</button>
       <button class="btn btn-o" onclick="importJSON()">↑ Import Backup</button>
@@ -819,45 +1437,29 @@ function renderExport(){
   </div>
   <div class="card">
     <div class="card-hd"><span class="card-ti">Storage Status</span></div>
-    <p style="font-size:12px;color:#8BA3C7">${S.records.length} total records · ~${(sz/1024).toFixed(0)}KB used of 5,120KB (${(sz/5242880*100).toFixed(1)}%)</p>
-    ${sz/5242880>0.7?'<p style="font-size:12px;color:#E65100;margin-top:6px">⚠ Storage over 70% — consider exporting a backup and clearing old periods.</p>':''}
+    <p style="font-size:12px;color:#8BA3C7">${S.records.length} records · ${S.adjustments.length} adjustments · ~${(sz/1024).toFixed(0)}KB used (${(sz/5242880*100).toFixed(1)}%)</p>
   </div>`;
 }
 
 // ── ROW ACTIONS ──
-function toggleOT2x(id){
-  const r=S.records.find(r=>r.id===id);
-  if(r){r.ot2x=!r.ot2x;r.edited=true;save();refresh();}
-}
-function deleteRow(id){
-  const r=S.records.find(r=>r.id===id);
-  if(r&&confirm(`Delete record for ${firstName(r.aux)} on ${fmt(r.date)}?`)){
-    r.del=true;detectOverlaps();save();refresh();toast('Record deleted','ok');
-  }
-}
-function restoreRow(id){
-  const r=S.records.find(r=>r.id===id);
-  if(r){r.del=false;detectOverlaps();save();refresh();toast('Record restored','ok');}
-}
+function toggleOT2x(id){const r=S.records.find(r=>r.id===id);if(r){r.ot2x=!r.ot2x;r.edited=true;save();refresh();}}
+function deleteRow(id){const r=S.records.find(r=>r.id===id);if(r&&confirm(`Delete record for ${firstName(r.aux)} on ${fmt(r.date)}?`)){r.del=true;detectOverlaps();save();refresh();toast('Deleted','ok');}}
+function restoreRow(id){const r=S.records.find(r=>r.id===id);if(r){r.del=false;detectOverlaps();save();refresh();toast('Restored','ok');}}
 function resolveOverlap(id){
   const r=S.records.find(r=>r.id===id);if(!r)return;
   showModal(`<h3>⚠ Overlapping Shift — ${firstName(r.aux)}</h3>
     <p style="font-size:12px;color:#8BA3C7;margin-bottom:8px">${fmt(r.date)} &nbsp; ${r.in} → ${r.out}</p>
     <p style="font-size:12px;color:#8BA3C7;margin-bottom:14px">Location: ${r.loc||'—'}</p>
-    <p style="font-size:12px;color:#1B2A4A;line-height:1.6">This shift overlaps with another entry for this employee on the same day. How would you like to handle it?</p>
+    <p style="font-size:12px;color:#1B2A4A;line-height:1.6">This shift overlaps with another for the same employee. How to resolve?</p>
     <div class="modal-actions">
       <button class="btn btn-o" onclick="editRow('${id.replace(/'/g,"\\'")}')">✎ Edit Times</button>
       <button class="btn btn-g" onclick="acceptOverlap('${id.replace(/'/g,"\\'")}')">✓ Accept as-is</button>
       <button class="btn btn-d" onclick="closeModal();deleteRow('${id.replace(/'/g,"\\'")}')">✕ Delete</button>
     </div>`);
 }
-function acceptOverlap(id){
-  const r=S.records.find(r=>r.id===id);
-  if(r){r.accepted=true;r.flagOverlap=false;detectOverlaps();save();closeModal();refresh();toast('Overlap accepted','ok');}
-}
+function acceptOverlap(id){const r=S.records.find(r=>r.id===id);if(r){r.accepted=true;r.flagOverlap=false;detectOverlaps();save();closeModal();refresh();toast('Accepted','ok');}}
 function editRow(id){
-  const r=S.records.find(r=>r.id===id);if(!r)return;
-  closeModal();
+  const r=S.records.find(r=>r.id===id);if(!r)return;closeModal();
   showModal(`<h3>Edit Record</h3>
     <div class="frow"><label>Date</label><input type="date" id="e-date" value="${r.date}"></div>
     <div class="frow"><label>Employee</label><input type="text" id="e-aux" value="${r.aux}"></div>
@@ -867,31 +1469,28 @@ function editRow(id){
     <div class="frow"><label>Notes</label><textarea id="e-notes">${r.notes||''}</textarea></div>
     <div class="modal-actions">
       <button class="btn btn-o" onclick="closeModal()">Cancel</button>
-      <button class="btn btn-p" onclick="saveEdit('${id.replace(/'/g,"\\'")}')">Save Changes</button>
+      <button class="btn btn-p" onclick="saveEdit('${id.replace(/'/g,"\\'")}')">Save</button>
     </div>`);
 }
 function saveEdit(id){
   const r=S.records.find(r=>r.id===id);if(!r)return;
-  r.date=document.getElementById('e-date').value;
-  r.aux=document.getElementById('e-aux').value.trim();
-  r.in=document.getElementById('e-in').value;
-  r.out=document.getElementById('e-out').value;
-  r.loc=document.getElementById('e-loc').value.trim();
-  r.notes=document.getElementById('e-notes').value.trim();
+  r.date=document.getElementById('e-date').value;r.aux=document.getElementById('e-aux').value.trim();
+  r.in=document.getElementById('e-in').value;r.out=document.getElementById('e-out').value;
+  r.loc=document.getElementById('e-loc').value.trim();r.notes=document.getElementById('e-notes').value.trim();
   r.edited=true;r.accepted=false;
-  detectOverlaps();save();closeModal();refresh();toast('Record updated','ok');
+  detectOverlaps();save();closeModal();refresh();toast('Updated','ok');
 }
 function showAddModal(){
-  const empOpts=Object.keys(S.roster).map(n=>`<option>${n}</option>`).join('');
+  const opts=Object.keys(S.roster).map(n=>`<option>${n}</option>`).join('');
   showModal(`<h3>Add Record</h3>
     <div class="frow"><label>Date</label><input type="date" id="a-date" value="${new Date().toISOString().split('T')[0]}"></div>
-    <div class="frow"><label>Employee</label><select id="a-aux">${empOpts||'<option>Add employees first</option>'}</select></div>
+    <div class="frow"><label>Employee</label><select id="a-aux">${opts||'<option>Add employees first</option>'}</select></div>
     <div class="frow"><label>Clock In</label><input type="time" id="a-in" value="08:00"></div>
     <div class="frow"><label>Clock Out</label><input type="time" id="a-out" value="16:00"></div>
-    <div class="frow"><label>Location (Listing)</label><input type="text" id="a-loc" placeholder="Lugar de Trabajo"></div>
+    <div class="frow"><label>Location</label><input type="text" id="a-loc" placeholder="Lugar de Trabajo"></div>
     <div class="modal-actions">
       <button class="btn btn-o" onclick="closeModal()">Cancel</button>
-      <button class="btn btn-p" onclick="addRow()">Add Record</button>
+      <button class="btn btn-p" onclick="addRow()">Add</button>
     </div>`);
 }
 function addRow(){
@@ -900,71 +1499,70 @@ function addRow(){
   const inT=document.getElementById('a-in').value;
   const outT=document.getElementById('a-out').value;
   const loc=document.getElementById('a-loc').value.trim();
-  if(!date||!aux||!inT||!outT)return toast('Fill all required fields','err');
+  if(!date||!aux||!inT||!outT)return toast('Fill all fields','err');
   const id=`${date}|${aux}|${inT}|M${Date.now()}`.replace(/\s/g,'');
   S.records.push({id,date,aux,in:inT,out:outT,loc,dmg:'',notes:'',ot2x:false,dayoff:false,del:false,edited:true,flagOverlap:false,accepted:false});
-  detectOverlaps();save();closeModal();refresh();toast('Record added','ok');
+  detectOverlaps();save();closeModal();refresh();toast('Added','ok');
 }
 
 // ── EMPLOYEE ACTIONS ──
-function toggleEmpType(aux){
-  if(S.roster[aux]){S.roster[aux].type=S.roster[aux].type==='FT'?'PT':'FT';save();renderEmployees();}
-}
+function toggleEmpType(aux){if(S.roster[aux]){S.roster[aux].type=S.roster[aux].type==='FT'?'PT':'FT';save();renderEmployees();}}
 function editEmployee(aux){
-  const e=S.roster[aux]||{type:'FT',salary:500};
+  const e=S.roster[aux]||{type:'FT',salary:500,role:'cleaner'};
+  const role=e.role||'cleaner';
   showModal(`<h3>Edit Employee</h3>
     <div class="frow"><label>Full Name</label><input type="text" id="ee-n" value="${aux}"></div>
-    <div class="frow"><label>Type</label><select id="ee-t"><option value="FT"${e.type==='FT'?' selected':''}>Full Time</option><option value="PT"${e.type==='PT'?' selected':''}>Part Time</option></select></div>
+    <div class="frow"><label>Role</label><select id="ee-r">
+      <option value="cleaner" ${role==='cleaner'?'selected':''}>Cleaner (counted in Performance)</option>
+      <option value="operations" ${role==='operations'?'selected':''}>Operations (excluded from Performance)</option>
+      <option value="laundry" ${role==='laundry'?'selected':''}>Laundry (excluded from Performance)</option>
+      <option value="other" ${role==='other'?'selected':''}>Other (excluded from Performance)</option>
+    </select></div>
+    <div class="frow"><label>Type</label><select id="ee-t"><option value="FT" ${e.type==='FT'?'selected':''}>Full Time</option><option value="PT" ${e.type==='PT'?'selected':''}>Part Time</option></select></div>
     <div class="frow"><label>Monthly Salary (USD)</label><input type="number" id="ee-s" value="${e.salary||500}" step="10" min="0"></div>
-    <div class="modal-actions">
-      <button class="btn btn-o" onclick="closeModal()">Cancel</button>
-      <button class="btn btn-p" onclick="saveEmployee('${aux.replace(/'/g,"\\'")}')">Save</button>
-    </div>`);
+    <div class="modal-actions"><button class="btn btn-o" onclick="closeModal()">Cancel</button><button class="btn btn-p" onclick="saveEmployee('${aux.replace(/'/g,"\\'")}')">Save</button></div>`);
 }
 function saveEmployee(old){
   const name=document.getElementById('ee-n').value.trim();
   const type=document.getElementById('ee-t').value;
+  const role=document.getElementById('ee-r').value;
   const sal=parseFloat(document.getElementById('ee-s').value)||500;
   if(!name)return toast('Name required','err');
-  if(name!==old){
-    S.roster[name]={...S.roster[old],type,salary:sal};
-    delete S.roster[old];
+  if(name!==old){S.roster[name]={...S.roster[old],type,salary:sal,role};delete S.roster[old];
     S.records.filter(r=>r.aux===old).forEach(r=>r.aux=name);
-  }else S.roster[name]={type,salary:sal};
-  save();closeModal();renderEmployees();toast('Employee updated','ok');
+    S.adjustments.filter(a=>a.employee===old).forEach(a=>a.employee=name);
+  }else S.roster[name]={type,salary:sal,role};
+  save();closeModal();renderEmployees();toast('Updated','ok');
 }
 function showAddEmpModal(){
   showModal(`<h3>Add Employee</h3>
     <div class="frow"><label>Full Name</label><input type="text" id="ne-n" placeholder="e.g. Jennifer Muñoz"></div>
+    <div class="frow"><label>Role</label><select id="ne-r">
+      <option value="cleaner">Cleaner (counted in Performance)</option>
+      <option value="operations">Operations</option>
+      <option value="laundry">Laundry</option>
+      <option value="other">Other</option>
+    </select></div>
     <div class="frow"><label>Type</label><select id="ne-t"><option value="FT">Full Time</option><option value="PT">Part Time</option></select></div>
     <div class="frow"><label>Monthly Salary (USD)</label><input type="number" id="ne-s" value="500" step="10" min="0"></div>
-    <div class="modal-actions">
-      <button class="btn btn-o" onclick="closeModal()">Cancel</button>
-      <button class="btn btn-p" onclick="addEmployee()">Add</button>
-    </div>`);
+    <div class="modal-actions"><button class="btn btn-o" onclick="closeModal()">Cancel</button><button class="btn btn-p" onclick="addEmployee()">Add</button></div>`);
 }
 function addEmployee(){
   const name=document.getElementById('ne-n').value.trim();
   const type=document.getElementById('ne-t').value;
+  const role=document.getElementById('ne-r').value;
   const sal=parseFloat(document.getElementById('ne-s').value)||500;
   if(!name)return toast('Name required','err');
-  S.roster[name]={type,salary:sal};save();closeModal();renderEmployees();toast('Employee added','ok');
+  S.roster[name]={type,salary:sal,role};save();closeModal();renderEmployees();toast('Added','ok');
 }
-function removeEmployee(aux){
-  if(confirm(`Remove ${aux} from roster? Records will be kept.`)){
-    delete S.roster[aux];save();renderEmployees();toast('Removed from roster','ok');
-  }
-}
+function removeEmployee(aux){if(confirm(`Remove ${aux} from roster?`)){delete S.roster[aux];save();renderEmployees();toast('Removed','ok');}}
 
 // ── HOLIDAY ACTIONS ──
 function showAddHolModal(){
   showModal(`<h3>Add Holiday</h3>
     <div class="frow"><label>Date</label><input type="date" id="h-d"></div>
     <div class="frow"><label>Holiday Name</label><input type="text" id="h-n" placeholder="e.g. Feriado Local"></div>
-    <div class="modal-actions">
-      <button class="btn btn-o" onclick="closeModal()">Cancel</button>
-      <button class="btn btn-p" onclick="addHoliday()">Add</button>
-    </div>`);
+    <div class="modal-actions"><button class="btn btn-o" onclick="closeModal()">Cancel</button><button class="btn btn-p" onclick="addHoliday()">Add</button></div>`);
 }
 function addHoliday(){
   const date=document.getElementById('h-d').value;
@@ -972,35 +1570,58 @@ function addHoliday(){
   if(!date||!name)return toast('Date and name required','err');
   if(S.holidays.some(h=>h.date===date&&h.name===name))return toast('Already exists','warn');
   S.holidays.push({date,name});S.holidays.sort((a,b)=>a.date.localeCompare(b.date));
-  save();closeModal();renderHolidays();toast('Holiday added','ok');
+  save();closeModal();renderHolidays();toast('Added','ok');
 }
-function removeHoliday(date,name){
-  if(confirm(`Remove "${name}"?`)){
-    S.holidays=S.holidays.filter(h=>!(h.date===date&&h.name===name));
-    save();renderHolidays();toast('Holiday removed','ok');
-  }
-}
+function removeHoliday(date,name){if(confirm(`Remove "${name}"?`)){S.holidays=S.holidays.filter(h=>!(h.date===date&&h.name===name));save();renderHolidays();toast('Removed','ok');}}
 
-// ── EXPORT FUNCTIONS ──
+// ── EXPORT ──
 function exportExcel(){
-  if(typeof XLSX==='undefined')return toast('XLSX library not loaded yet','err');
+  if(typeof XLSX==='undefined')return toast('XLSX not loaded','err');
   const wb=XLSX.utils.book_new();
   const recs=filtered();
-  const raw=recs.map(r=>{const c=calcRecord(r);return{Date:fmt(r.date),Employee:r.aux,'Clock In':r.in,'Clock Out':r.out,Hours:+c.hours.toFixed(2),Location:r.loc,'OT Type':c.otType,'Day Off 2x':r.ot2x?'Yes':'No','Pay USD':+c.pay.toFixed(2),Damage:r.dmg||'',Notes:r.notes||''};});
+  const adjs=filteredAdjustments();
+  const{from:dateFrom,to:dateTo}=getDateBounds();
+  // Raw data
+  const raw=recs.map(r=>{const c=calcRecord(r);return{Date:fmt(r.date),Employee:r.aux,'Clock In':r.in,'Clock Out':r.out,Hours:+c.hours.toFixed(2),Location:r.loc,'OT Type':c.otType,'Reg Pay':+c.regP.toFixed(2),'OT 1.5x Pay':+c.otP.toFixed(2),'OT 2x Pay':+c.ot2P.toFixed(2),'Total Pay':+c.pay.toFixed(2),Notes:r.notes||''};});
   XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(raw),'Raw Data');
-  const empMap={};
-  recs.forEach(r=>{if(!empMap[r.aux])empMap[r.aux]={shifts:0,hours:0,pay:0};const c=calcRecord(r);empMap[r.aux].shifts++;empMap[r.aux].hours+=c.hours;empMap[r.aux].pay+=c.pay;});
-  const empData=Object.entries(empMap).map(([aux,d])=>({Employee:aux,Type:(S.roster[aux]||{type:'FT'}).type,Shifts:d.shifts,'Total Hours':+d.hours.toFixed(2),'Avg Hrs/Shift':+(d.hours/d.shifts).toFixed(2),'Total Pay USD':+d.pay.toFixed(2)})).sort((a,b)=>b['Total Pay USD']-a['Total Pay USD']);
-  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(empData),'Employees');
+  // Payroll — full calc with floor
+  const empSet=new Set();
+  recs.forEach(r=>empSet.add(r.aux));
+  adjs.forEach(a=>empSet.add(a.employee));
+  const payroll=[...empSet].map(aux=>{
+    const p=calcEmployeePayroll(aux,dateFrom,dateTo);
+    const r=S.roster[aux]||{type:'FT',role:'cleaner'};
+    return{Employee:aux,Type:r.type,Role:r.role||'cleaner',
+      Shifts:p.shifts,
+      'Reg Hrs':+p.regH.toFixed(2),'Reg Pay':+p.regP.toFixed(2),
+      '1.5x Hrs':+p.otH.toFixed(2),'1.5x Pay':+p.otP.toFixed(2),
+      Subtotal:+p.wagesSubtotal.toFixed(2),
+      Months:+p.months.toFixed(3),
+      'Floor':+p.floor.toFixed(2),
+      'Wages Paid':+p.wagesPaid.toFixed(2),
+      'Floor Bonus':+p.floorBonus.toFixed(2),
+      Prorated:p.prorated?'Yes':'No',
+      '2x Hrs':+p.ot2H.toFixed(2),'2x Pay':+p.ot2P.toFixed(2),
+      Adjustments:+p.adjustments.toFixed(2),
+      TOTAL:+p.total.toFixed(2)};
+  }).sort((a,b)=>b.TOTAL-a.TOTAL);
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(payroll),'Payroll');
+  // Cost centers (raw hourly, no floor — floor is per-employee not per-location)
   const ccMap={};
-  recs.forEach(r=>{const l=r.loc||'Unassigned';if(!ccMap[l])ccMap[l]={shifts:0,hours:0,pay:0};const c=calcRecord(r);ccMap[l].shifts++;ccMap[l].hours+=c.hours;ccMap[l].pay+=c.pay;});
-  const ccData=Object.entries(ccMap).map(([loc,d])=>({Location:loc,Shifts:d.shifts,'Total Hours':+d.hours.toFixed(2),'Total Pay USD':+d.pay.toFixed(2)})).sort((a,b)=>b['Total Pay USD']-a['Total Pay USD']);
-  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(ccData),'Cost Centers');
+  recs.forEach(r=>{const l=r.loc||'Unassigned';if(!ccMap[l])ccMap[l]={shifts:0,hours:0,pay:0};
+    const c=calcRecord(r);ccMap[l].shifts++;ccMap[l].hours+=c.hours;ccMap[l].pay+=c.pay;});
+  const cc=Object.entries(ccMap).map(([loc,d])=>({Location:loc,Shifts:d.shifts,'Total Hours':+d.hours.toFixed(2),'Hourly Cost USD':+d.pay.toFixed(2)})).sort((a,b)=>b['Hourly Cost USD']-a['Hourly Cost USD']);
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(cc),'Cost Centers');
+  // Adjustments
+  if(adjs.length){
+    const adjData=adjs.map(a=>({Date:fmt(a.date),Employee:a.employee,Label:a.label,Amount:+a.amount.toFixed(2)}));
+    XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(adjData),'Adjustments');
+  }
   XLSX.writeFile(wb,`payroll_${S.period||'all'}_${new Date().toISOString().split('T')[0]}.xlsx`);
   toast('Excel downloaded!','ok');
 }
 function exportJSON(){
-  const blob=new Blob([JSON.stringify({records:S.records,roster:S.roster,holidays:S.holidays,exported:new Date().toISOString()},null,2)],{type:'application/json'});
+  const blob=new Blob([JSON.stringify({records:S.records,roster:S.roster,holidays:S.holidays,adjustments:S.adjustments,exported:new Date().toISOString()},null,2)],{type:'application/json'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);
   a.download=`payroll_backup_${new Date().toISOString().split('T')[0]}.json`;a.click();
   toast('Backup exported','ok');
@@ -1016,18 +1637,17 @@ function importJSON(){
         if(d.records)S.records=d.records;
         if(d.roster)S.roster=d.roster;
         if(d.holidays)S.holidays=d.holidays;
+        if(d.adjustments)S.adjustments=d.adjustments;
         detectOverlaps();save();populatePeriods();refresh();
-        toast(`Imported: ${S.records.length} records`,'ok');
-      }catch(e){toast('Invalid JSON file','err');}
+        toast(`Imported: ${S.records.length} records, ${S.adjustments.length} adjustments`,'ok');
+      }catch(e){toast('Invalid JSON','err');}
     };reader.readAsText(file);
   };inp.click();
 }
 
-// ── MODAL ──
+// ── MODAL/TOAST ──
 function showModal(html){document.getElementById('modal').innerHTML=html;document.getElementById('modal-bg').style.display='flex';}
 function closeModal(){document.getElementById('modal-bg').style.display='none';}
-
-// ── TOAST ──
 function toast(msg,type='ok'){
   const t=document.getElementById('toast');
   const el=document.createElement('div');
@@ -1042,14 +1662,18 @@ document.querySelectorAll('.nav').forEach(n=>n.addEventListener('click',()=>navi
 // ── INIT ──
 function init(){
   loadStore();
+  // Migrate roster: assign default roles + special cases for Ivan & Jennifer
+  Object.keys(S.roster).forEach(name=>{
+    if(!S.roster[name].role){
+      const lo=name.toLowerCase();
+      if(lo.includes('ivan'))S.roster[name].role='operations';
+      else if(lo.includes('jennifer'))S.roster[name].role='laundry';
+      else S.roster[name].role='cleaner';
+    }
+  });
+  save();
   detectOverlaps();
   populatePeriods();
-  const months=[...new Set(S.records.map(r=>r.date.substring(0,7)))].sort();
-  if(months.length){
-    const cur=new Date().toISOString().substring(0,7);
-    S.period=months.includes(cur)?cur:months[months.length-1];
-    document.getElementById('period-sel').value=S.period;
-  }
   navigate('overview');
 }
 init();
