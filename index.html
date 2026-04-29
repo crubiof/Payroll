@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Payroll Dashboard</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+body{background:#f0f2f7;display:flex;height:100vh;overflow:hidden;font-size:13px;color:#1B2A4A}
+#sb{width:205px;background:#1B2A4A;display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
+.sb-logo{padding:18px 16px 14px;border-bottom:1px solid #243558}
+.sb-logo h1{color:#fff;font-size:13px;font-weight:600;line-height:1.4}
+.sb-logo p{color:#4A6090;font-size:10px;margin-top:2px}
+.sb-sect{padding:10px 8px 4px}
+.sb-lbl{color:#3D5580;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:0 8px 5px;display:block}
+.nav{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:6px;cursor:pointer;color:#6B82A8;font-size:12px;margin-bottom:1px;transition:all .15s;white-space:nowrap}
+.nav:hover{background:#243558;color:#C8D8F0}
+.nav.on{background:#243558;color:#fff}
+.nav-ico{font-size:13px;width:16px;text-align:center}
+.sb-footer{margin-top:auto;padding:12px;border-top:1px solid #243558}
+.sb-period{background:#243558;border-radius:8px;padding:10px 12px}
+.sb-period label{color:#5A7099;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:5px}
+.sb-period select{width:100%;background:#1B2A4A;border:1px solid #3D5580;border-radius:4px;color:#C8D8F0;font-size:12px;padding:5px 8px;cursor:pointer;outline:none}
+#mn{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.tb{background:#fff;border-bottom:1px solid #E0E6F0;padding:0 22px;height:52px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.tb-l{display:flex;align-items:center;gap:10px}
+.tb-title{font-size:15px;font-weight:600;color:#1B2A4A}
+.tb-sub{font-size:11px;color:#8BA3C7;background:#EEF1F8;padding:2px 8px;border-radius:10px}
+.tb-r{display:flex;align-items:center;gap:8px}
+#ct{flex:1;overflow-y:auto;padding:22px}
+.sec{display:none}
+.sec.on{display:block}
+.btn{padding:6px 13px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;border:none;transition:all .15s;display:inline-flex;align-items:center;gap:5px;line-height:1.4}
+.btn-p{background:#1B2A4A;color:#fff}
+.btn-p:hover{background:#243558}
+.btn-o{background:#fff;color:#1B2A4A;border:1px solid #C5D0E0}
+.btn-o:hover{background:#EEF1F8}
+.btn-d{background:#FEF3F2;color:#A32D2D;border:1px solid #F7C1C1}
+.btn-d:hover{background:#fee}
+.btn-g{background:#E8F5E9;color:#2E7D32;border:1px solid #A5D6A7}
+.btn-warn{background:#FFF3E0;color:#E65100;border:1px solid #FFCC80}
+.btn-sm{padding:3px 8px;font-size:11px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.kgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.kc{background:#fff;border:1px solid #E0E6F0;border-radius:10px;padding:14px 16px}
+.kc.warn{border-color:#F7C1C1;background:#FEF3F2}
+.kc.ok{border-color:#A5D6A7;background:#E8F5E9}
+.kl{font-size:10px;color:#6B82A8;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
+.kv{font-size:22px;font-weight:700;color:#1B2A4A;line-height:1}
+.kc.warn .kv{color:#A32D2D}
+.kc.ok .kv{color:#2E7D32}
+.ks{font-size:11px;color:#8BA3C7;margin-top:3px}
+.card{background:#fff;border:1px solid #E0E6F0;border-radius:10px;padding:18px;margin-bottom:16px}
+.card-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.card-ti{font-size:13px;font-weight:600;color:#1B2A4A}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{background:#F4F6FB;color:#6B82A8;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;padding:8px 11px;text-align:left;border-bottom:1px solid #E0E6F0;white-space:nowrap;position:sticky;top:0}
+td{padding:7px 11px;border-bottom:1px solid #F0F3F8;color:#1B2A4A;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#FAFBFE}
+tr.ov td{background:#FEF3F2}
+tr.ed td{background:#F0F8FF}
+tr.del-row{opacity:.4}
+tr.del-row td{text-decoration:line-through}
+tfoot td{font-weight:600;background:#F4F6FB;border-top:2px solid #E0E6F0;border-bottom:none}
+.badge{display:inline-block;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:600}
+.b-ft{background:#EEF1F8;color:#1B2A4A}
+.b-pt{background:#F1EFE8;color:#5F5E5A}
+.b-reg{background:#E8F5E9;color:#1B5E20}
+.b-15{background:#FFF3E0;color:#E65100}
+.b-2x{background:#FCE4EC;color:#880E4F}
+.tog{position:relative;display:inline-block;width:32px;height:17px;flex-shrink:0}
+.tog input{opacity:0;width:0;height:0}
+.tog .sl{position:absolute;cursor:pointer;inset:0;background:#C8D0DC;border-radius:17px;transition:.2s}
+.tog .sl::before{content:'';position:absolute;width:11px;height:11px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.2s}
+.tog input:checked+.sl{background:#1B2A4A}
+.tog.red input:checked+.sl{background:#C62828}
+.tog input:checked+.sl::before{transform:translateX(15px)}
+.hm-wrap{overflow-x:auto;padding-bottom:4px}
+.hm-table{border-collapse:separate;border-spacing:3px;font-size:10px}
+.hm-table th{background:none;border:none;font-size:9px;padding:1px 3px;text-align:center;color:#8BA3C7;position:static}
+.hm-table td{padding:0;border:none;background:none}
+.hm-cell{width:18px;height:18px;border-radius:2px;display:block;cursor:default}
+.hm0{background:#EEF1F8}
+.hm1{background:#B5D4F4}
+.hm2{background:#378ADD}
+.hm3{background:#185FA5}
+.hm4{background:#1B2A4A}
+.hm-name{font-size:10px;white-space:nowrap;text-align:right!important;padding-right:6px!important;color:#1B2A4A;font-weight:500}
+.bar-wrap{margin-top:6px}
+.bar-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.bar-label{font-size:11px;color:#1B2A4A;width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:right;flex-shrink:0}
+.bar-track{flex:1;background:#EEF1F8;border-radius:4px;height:13px;min-width:0}
+.bar-fill{height:100%;border-radius:4px;background:#1B2A4A;transition:width .4s}
+.bar-val{font-size:11px;color:#6B82A8;width:130px;flex-shrink:0}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;z-index:1000}
+.modal{background:#fff;border-radius:12px;padding:22px;width:460px;max-width:95vw;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.modal h3{font-size:14px;font-weight:600;color:#1B2A4A;margin-bottom:14px}
+.frow{margin-bottom:11px}
+.frow label{display:block;font-size:11px;color:#6B82A8;margin-bottom:3px;font-weight:500}
+.frow input,.frow select,.frow textarea{width:100%;padding:7px 10px;border:1px solid #D0D9E8;border-radius:6px;font-size:12px;color:#1B2A4A;outline:none}
+.frow input:focus,.frow select:focus{border-color:#1B2A4A}
+.frow textarea{height:72px;resize:vertical}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap}
+#toast{position:fixed;bottom:20px;right:20px;z-index:2000;display:flex;flex-direction:column;gap:6px;pointer-events:none}
+.ti{padding:9px 14px;border-radius:7px;font-size:12px;font-weight:500;max-width:280px;animation:sIn .2s ease}
+.tok{background:#1B2A4A;color:#fff}
+.terr{background:#A32D2D;color:#fff}
+.twarn{background:#E65100;color:#fff}
+@keyframes sIn{from{transform:translateX(100%);opacity:0}to{transform:none;opacity:1}}
+.wi{color:#E65100;font-size:12px;cursor:pointer}
+.empty{text-align:center;padding:48px;color:#8BA3C7}
+.empty-ico{font-size:36px;margin-bottom:10px}
+.empty p{font-size:13px;line-height:1.6}
+.legend{display:flex;gap:10px;flex-wrap:wrap}
+.leg-item{display:flex;align-items:center;gap:4px;font-size:10px;color:#6B82A8}
+.leg-dot{width:11px;height:11px;border-radius:2px;flex-shrink:0}
+.sec-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.sec-hd h2{font-size:15px;font-weight:600;color:#1B2A4A}
+.tbl-wrap{overflow-x:auto}
+.rate-info{background:#EEF1F8;border-radius:8px;padding:12px 16px;font-size:12px;color:#6B82A8;line-height:1.7}
+.rate-info strong{color:#1B2A4A}
+.divider{height:1px;background:#F0F3F8;margin:14px 0}
+@media print{#sb,#toast,.btn,.tb-r{display:none!important}#mn{overflow:visible}#ct{overflow:visible;padding:8px}.sec{display:block!important}.card{break-inside:avoid}}
+</style>
+</head>
+<body>
+<aside id="sb">
+  <div class="sb-logo">
+    <h1>Payroll Dashboard</h1>
+    <p>Auxiliares — Airbnb</p>
+  </div>
+  <div class="sb-sect">
+    <span class="sb-lbl">Main</span>
+    <div class="nav on" data-sec="overview"><span class="nav-ico">◉</span>Overview</div>
+    <div class="nav" data-sec="rawdata"><span class="nav-ico">≡</span>Raw Data</div>
+  </div>
+  <div class="sb-sect">
+    <span class="sb-lbl">Reports</span>
+    <div class="nav" data-sec="performance"><span class="nav-ico">★</span>Performance</div>
+    <div class="nav" data-sec="costcenter"><span class="nav-ico">$</span>Cost Centers</div>
+  </div>
+  <div class="sb-sect">
+    <span class="sb-lbl">Setup</span>
+    <div class="nav" data-sec="employees"><span class="nav-ico">◎</span>Employees</div>
+    <div class="nav" data-sec="holidays"><span class="nav-ico">✦</span>Holidays</div>
+    <div class="nav" data-sec="export"><span class="nav-ico">↓</span>Export</div>
+  </div>
+  <div class="sb-footer">
+    <div class="sb-period">
+      <label>Period</label>
+      <select id="period-sel" onchange="setPeriod(this.value)">
+        <option value="">All time</option>
+      </select>
+    </div>
+  </div>
+</aside>
+
+<main id="mn">
+  <div class="tb">
+    <div class="tb-l">
+      <span class="tb-title" id="tb-title">Overview</span>
+      <span class="tb-sub" id="tb-sub">All time</span>
+    </div>
+    <div class="tb-r">
+      <button class="btn btn-o" onclick="loadFromSheets()" id="load-btn">⟳ Sync Sheets</button>
+      <button class="btn btn-p" onclick="navigate('export')">↓ Export</button>
+    </div>
+  </div>
+  <div id="ct">
+    <div class="sec on" id="sec-overview"></div>
+    <div class="sec" id="sec-rawdata"></div>
+    <div class="sec" id="sec-performance"></div>
+    <div class="sec" id="sec-costcenter"></div>
+    <div class="sec" id="sec-employees"></div>
+    <div class="sec" id="sec-holidays"></div>
+    <div class="sec" id="sec-export"></div>
+  </div>
+</main>
+
+<div id="modal-bg" class="modal-bg" style="display:none" onclick="if(event.target===this)closeModal()">
+  <div class="modal" id="modal"></div>
+</div>
+<div id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+const SHEET_ID='1l6XtGN_h7k9IKmbwuvoalggDoJABcDhY2E1VNzUVIO4';
+const BASE_SALARY=500, BASE_HOURS=240, BASE_RATE=BASE_SALARY/BASE_HOURS;
+
+const EC_HOL=[
+  {date:'2023-01-01',name:'Año Nuevo'},{date:'2023-02-20',name:'Carnaval'},{date:'2023-02-21',name:'Carnaval'},
+  {date:'2023-04-06',name:'Jueves Santo'},{date:'2023-04-07',name:'Viernes Santo'},{date:'2023-05-01',name:'Día del Trabajo'},
+  {date:'2023-05-24',name:'Batalla de Pichincha'},{date:'2023-08-10',name:'Grito de Independencia'},
+  {date:'2023-10-09',name:'Independencia de Guayaquil'},{date:'2023-11-02',name:'Día de Difuntos'},
+  {date:'2023-11-03',name:'Independencia de Cuenca'},{date:'2023-12-25',name:'Navidad'},
+  {date:'2024-01-01',name:'Año Nuevo'},{date:'2024-02-12',name:'Carnaval'},{date:'2024-02-13',name:'Carnaval'},
+  {date:'2024-03-28',name:'Jueves Santo'},{date:'2024-03-29',name:'Viernes Santo'},{date:'2024-05-01',name:'Día del Trabajo'},
+  {date:'2024-05-24',name:'Batalla de Pichincha'},{date:'2024-08-12',name:'Grito de Independencia'},
+  {date:'2024-10-09',name:'Independencia de Guayaquil'},{date:'2024-11-04',name:'Día de Difuntos'},
+  {date:'2024-11-04',name:'Independencia de Cuenca'},{date:'2024-12-25',name:'Navidad'},
+  {date:'2025-01-01',name:'Año Nuevo'},{date:'2025-03-03',name:'Carnaval'},{date:'2025-03-04',name:'Carnaval'},
+  {date:'2025-04-17',name:'Jueves Santo'},{date:'2025-04-18',name:'Viernes Santo'},{date:'2025-05-01',name:'Día del Trabajo'},
+  {date:'2025-05-26',name:'Batalla de Pichincha'},{date:'2025-08-11',name:'Grito de Independencia'},
+  {date:'2025-10-09',name:'Independencia de Guayaquil'},{date:'2025-11-03',name:'Día de Difuntos'},
+  {date:'2025-11-03',name:'Independencia de Cuenca'},{date:'2025-12-25',name:'Navidad'},
+  {date:'2026-01-01',name:'Año Nuevo'},{date:'2026-02-16',name:'Carnaval'},{date:'2026-02-17',name:'Carnaval'},
+  {date:'2026-04-02',name:'Jueves Santo'},{date:'2026-04-03',name:'Viernes Santo'},{date:'2026-05-01',name:'Día del Trabajo'},
+  {date:'2026-05-25',name:'Batalla de Pichincha'},{date:'2026-08-10',name:'Grito de Independencia'},
+  {date:'2026-10-09',name:'Independencia de Guayaquil'},{date:'2026-11-02',name:'Día de Difuntos'},
+  {date:'2026-11-03',name:'Independencia de Cuenca'},{date:'2026-12-25',name:'Navidad'},
+];
+
+let S={records:[],roster:{},holidays:[...EC_HOL],period:'',section:'overview'};
+
+// ── STORAGE ──
+function save(){
+  try{
+    localStorage.setItem('pd_r',JSON.stringify(S.records));
+    localStorage.setItem('pd_ro',JSON.stringify(S.roster));
+    localStorage.setItem('pd_h',JSON.stringify(S.holidays));
+  }catch(e){toast('Storage nearly full — export a backup JSON!','warn');}
+}
+function loadStore(){
+  try{
+    const r=localStorage.getItem('pd_r'),ro=localStorage.getItem('pd_ro'),h=localStorage.getItem('pd_h');
+    if(r)S.records=JSON.parse(r);
+    if(ro)S.roster=JSON.parse(ro);
+    if(h)S.holidays=JSON.parse(h);
+  }catch(e){console.error(e);}
+}
+
+// ── TIME/DATE ──
+function parseTime(s){
+  if(!s)return null;
+  const m=String(s).trim().match(/(\d+):(\d+)(?::\d+)?\s*(AM|PM)?/i);
+  if(!m)return null;
+  let h=parseInt(m[1]);const mn=m[2],ap=(m[3]||'').toUpperCase();
+  if(ap==='PM'&&h!==12)h+=12;
+  if(ap==='AM'&&h===12)h=0;
+  return String(h).padStart(2,'0')+':'+mn;
+}
+function parseDate(s){
+  if(!s)return null;
+  const m=String(s).trim().match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+  return m?`${m[3]}-${m[1].padStart(2,'0')}-${m[2].padStart(2,'0')}`:null;
+}
+function hDiff(t1,t2){
+  const[h1,m1]=t1.split(':').map(Number),[h2,m2]=t2.split(':').map(Number);
+  let ms=(h2*60+m2)-(h1*60+m1);
+  if(ms<0)ms+=1440;
+  return parseFloat((ms/60).toFixed(4));
+}
+function fmt(d){if(!d)return'';const[y,m,dd]=d.split('-');return`${dd}/${m}/${y}`;}
+function monthLabel(ym){
+  if(!ym)return'All time';
+  const[y,m]=ym.split('-');
+  return['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][parseInt(m)-1]+' '+y;
+}
+function fC(n){return'$'+parseFloat(n).toFixed(2);}
+function fH(n){return parseFloat(n).toFixed(2)+'h';}
+function firstName(n){return(n||'').split(' ')[0];}
+
+// ── PAYROLL ──
+function isHoliday(date){return S.holidays.some(h=>h.date===date);}
+function calcRecord(r){
+  if(r.del)return{hours:0,pay:0,otType:'del'};
+  const hours=hDiff(r.in,r.out);
+  if(hours<=0)return{hours:0,pay:0,otType:'err'};
+  const rate=BASE_RATE;
+  const hol=isHoliday(r.date);
+  let pay,otType;
+  if(r.ot2x||hol||r.dayoff){
+    pay=hours*rate*2;
+    otType=r.ot2x?'2x':hol?'2x-hol':'2x-off';
+  }else{
+    const reg=Math.min(hours,8),ot=Math.max(0,hours-8);
+    pay=reg*rate+ot*rate*1.5;
+    otType=ot>0?'1.5x':'regular';
+  }
+  return{hours,pay,otType};
+}
+function otBadge(r){
+  const{otType}=calcRecord(r);
+  if(otType==='del')return'<span class="badge" style="background:#fee;color:#A32D2D">DEL</span>';
+  if(otType.startsWith('2x'))return'<span class="badge b-2x">2×</span>';
+  if(otType==='1.5x')return'<span class="badge b-15">1.5×</span>';
+  return'<span class="badge b-reg">Reg</span>';
+}
+
+// ── FILTERED RECORDS ──
+function filtered(inclDel=false){
+  return S.records.filter(r=>{
+    if(!inclDel&&r.del)return false;
+    if(S.period&&!r.date.startsWith(S.period))return false;
+    return true;
+  });
+}
+
+// ── CSV FETCH ──
+async function loadFromSheets(){
+  const btn=document.getElementById('load-btn');
+  btn.disabled=true;btn.textContent='⟳ Loading...';
+  const url=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&cachebust=${Date.now()}`;
+  try{
+    const res=await fetch(url);
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    const text=await res.text();
+    const rows=parseCSV(text);
+    const added=mergeRecords(rows);
+    updateRoster(rows);
+    detectOverlaps();
+    save();
+    populatePeriods();
+    refresh();
+    toast(`Synced: ${rows.length} rows, ${added} new records.`,'ok');
+  }catch(e){
+    toast('Could not reach the sheet. Ensure it is shared publicly (Anyone with link → Viewer).','err');
+    console.error(e);
+  }
+  btn.disabled=false;btn.textContent='⟳ Sync Sheets';
+}
+
+function parseCSVLine(line){
+  const cols=[];let cur='',inQ=false;
+  for(let i=0;i<line.length;i++){
+    const c=line[i];
+    if(c==='"'){if(inQ&&line[i+1]==='"'){cur+='"';i++;}else inQ=!inQ;}
+    else if(c===','&&!inQ){cols.push(cur);cur='';}
+    else cur+=c;
+  }
+  cols.push(cur);return cols;
+}
+
+function parseCSV(text){
+  const lines=text.split('\n').map(l=>l.trimEnd()).filter(l=>l);
+  if(lines.length<2)return[];
+  const hdrs=parseCSVLine(lines[0]).map(h=>h.trim().replace(/^"|"$/g,''));
+  const ci=(name)=>hdrs.findIndex(h=>h.toLowerCase().includes(name.toLowerCase()));
+  const iTs=ci('Timestamp'),iAux=ci('Auxiliar'),iIn=ci('Ingreso'),iOut=ci('Salida'),iLoc=ci('Lugar'),iDmg=ci('daño'),iNotes=ci('Novedad');
+  const rows=[];
+  for(let i=1;i<lines.length;i++){
+    const v=parseCSVLine(lines[i]).map(s=>s.trim().replace(/^"|"$/g,''));
+    const ts=v[iTs]||'',aux=(v[iAux]||'').trim();
+    const inT=parseTime(v[iIn]),outT=parseTime(v[iOut]);
+    if(!ts||!aux||!inT||!outT)continue;
+    const date=parseDate(ts);if(!date)continue;
+    const loc=(v[iLoc]||'').trim();
+    const id=`${date}|${aux}|${inT}|${outT}`.replace(/\s/g,'');
+    rows.push({id,date,aux,in:inT,out:outT,loc,
+      dmg:iDmg>=0?v[iDmg]:'',notes:iNotes>=0?v[iNotes]:'',
+      ot2x:false,dayoff:false,del:false,edited:false,flagOverlap:false,accepted:false});
+  }
+  return rows;
+}
+
+function mergeRecords(rows){
+  const ex=new Set(S.records.map(r=>r.id));
+  let added=0;
+  rows.forEach(r=>{if(!ex.has(r.id)){S.records.push(r);ex.add(r.id);added++;}});
+  return added;
+}
+function updateRoster(rows){
+  rows.forEach(r=>{if(r.aux&&!S.roster[r.aux])S.roster[r.aux]={type:'FT',salary:500};});
+}
+function detectOverlaps(){
+  S.records.forEach(r=>r.flagOverlap=false);
+  const grp={};
+  S.records.filter(r=>!r.del).forEach(r=>{
+    const k=r.aux+'|'+r.date;(grp[k]=grp[k]||[]).push(r);
+  });
+  Object.values(grp).forEach(g=>{
+    if(g.length<2)return;
+    g.sort((a,b)=>a.in.localeCompare(b.in));
+    for(let i=0;i<g.length-1;i++){
+      if(g[i].out>g[i+1].in&&!g[i].accepted&&!g[i+1].accepted){g[i].flagOverlap=true;g[i+1].flagOverlap=true;}
+    }
+  });
+}
+
+// ── NAV / PERIOD ──
+function populatePeriods(){
+  const sel=document.getElementById('period-sel');
+  const months=[...new Set(S.records.map(r=>r.date.substring(0,7)))].sort().reverse();
+  sel.innerHTML='<option value="">All time</option>'+months.map(m=>`<option value="${m}"${S.period===m?' selected':''}>${monthLabel(m)}</option>`).join('');
+}
+function setPeriod(v){S.period=v;refresh();}
+function navigate(sec){
+  S.section=sec;
+  document.querySelectorAll('.nav').forEach(n=>n.classList.toggle('on',n.dataset.sec===sec));
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('on'));
+  document.getElementById('sec-'+sec).classList.add('on');
+  const T={overview:'Overview',rawdata:'Raw Data',performance:'Performance',costcenter:'Cost Centers',employees:'Employees',holidays:'Holidays',export:'Export'};
+  document.getElementById('tb-title').textContent=T[sec]||sec;
+  document.getElementById('tb-sub').textContent=monthLabel(S.period);
+  renderSection(sec);
+}
+function refresh(){
+  document.getElementById('tb-sub').textContent=monthLabel(S.period);
+  renderSection(S.section);
+}
+function renderSection(sec){
+  ({overview:renderOverview,rawdata:renderRawData,performance:renderPerformance,
+    costcenter:renderCostCenter,employees:renderEmployees,holidays:renderHolidays,export:renderExport}[sec]||(() => {}))();
+}
+
+// ── OVERVIEW ──
+function renderOverview(){
+  const recs=filtered();
+  let tH=0,tP=0;const empSet=new Set();
+  recs.forEach(r=>{const c=calcRecord(r);tH+=c.hours;tP+=c.pay;empSet.add(r.aux);});
+  const flags=recs.filter(r=>r.flagOverlap).length;
+  const ccMap={};
+  recs.forEach(r=>{
+    const l=r.loc||'(Sin asignar)';
+    if(!ccMap[l])ccMap[l]={hours:0,pay:0,shifts:0};
+    const c=calcRecord(r);ccMap[l].hours+=c.hours;ccMap[l].pay+=c.pay;ccMap[l].shifts++;
+  });
+  const ccList=Object.entries(ccMap).sort((a,b)=>b[1].pay-a[1].pay);
+  const mxP=ccList[0]?.[1].pay||1;
+  const empList=[...empSet].map(aux=>{
+    const er=recs.filter(r=>r.aux===aux);let h=0,p=0;
+    er.forEach(r=>{const c=calcRecord(r);h+=c.hours;p+=c.pay;});
+    return{aux,shifts:er.length,h,p};
+  }).sort((a,b)=>b.p-a.p);
+
+  document.getElementById('sec-overview').innerHTML=`
+  <div class="kgrid">
+    <div class="kc"><div class="kl">Total Hours</div><div class="kv">${tH.toFixed(1)}</div><div class="ks">${recs.length} shifts recorded</div></div>
+    <div class="kc"><div class="kl">Payroll Cost</div><div class="kv">${fC(tP)}</div><div class="ks">Avg ${fC(tP/(empSet.size||1))}/person</div></div>
+    <div class="kc"><div class="kl">Active Employees</div><div class="kv">${empSet.size}</div><div class="ks">${ccList.length} active locations</div></div>
+    <div class="kc ${flags?'warn':'ok'}"><div class="kl">Flags / Overlaps</div><div class="kv">${flags}</div><div class="ks">${flags?'Needs review':'All clear'}</div></div>
+  </div>
+  ${ccList.length?`<div class="card">
+    <div class="card-hd"><span class="card-ti">Payroll Cost by Location</span><span style="font-size:11px;color:#8BA3C7">${monthLabel(S.period)}</span></div>
+    <div class="bar-wrap">${ccList.map(([loc,d])=>`
+      <div class="bar-row">
+        <div class="bar-label" title="${loc}">${loc}</div>
+        <div class="bar-track"><div class="bar-fill" style="width:${(d.pay/mxP*100).toFixed(1)}%"></div></div>
+        <div class="bar-val">${fC(d.pay)} · ${d.shifts} shifts</div>
+      </div>`).join('')}</div>
+  </div>`:''}
+  <div class="card" style="padding:0">
+    <div style="padding:14px 18px 8px;display:flex;justify-content:space-between;align-items:center">
+      <span class="card-ti">Employee Summary</span>
+      <button class="btn btn-o btn-sm" onclick="navigate('performance')">See Performance →</button>
+    </div>
+    ${empList.length?`<div class="tbl-wrap"><table>
+      <thead><tr><th>#</th><th>Employee</th><th>Type</th><th>Shifts</th><th>Hours</th><th>Pay</th></tr></thead>
+      <tbody>${empList.map((e,i)=>{
+        const ro=S.roster[e.aux]||{type:'FT'};
+        return`<tr><td style="color:#8BA3C7;font-weight:600">${i+1}</td><td>${firstName(e.aux)}</td>
+          <td><span class="badge ${ro.type==='FT'?'b-ft':'b-pt'}">${ro.type}</span></td>
+          <td>${e.shifts}</td><td>${fH(e.h)}</td><td>${fC(e.p)}</td></tr>`;
+      }).join('')}</tbody>
+    </table></div>`:'<div class="empty"><p>No data. Click "Sync Sheets" to load.</p></div>'}
+  </div>`;
+}
+
+// ── RAW DATA ──
+function renderRawData(){
+  const sec=document.getElementById('sec-rawdata');
+  const recs=filtered(true).sort((a,b)=>b.date.localeCompare(a.date)||a.aux.localeCompare(b.aux));
+  const flags=recs.filter(r=>r.flagOverlap&&!r.del).length;
+  if(!recs.length){
+    sec.innerHTML=`<div class="sec-hd"><h2>Raw Data</h2></div>
+    <div class="empty"><div class="empty-ico">📋</div><p>No records loaded.<br>Click <strong>Sync Sheets</strong> to import from Google Sheets.</p></div>`;return;
+  }
+  const eid=id=>id.replace(/[|.]/g,'_');
+  sec.innerHTML=`
+  <div class="sec-hd">
+    <h2>Raw Data <span style="font-size:12px;color:#8BA3C7;font-weight:400">(${recs.filter(r=>!r.del).length} active)</span></h2>
+    <div style="display:flex;gap:8px;align-items:center">
+      ${flags?`<span style="color:#E65100;font-size:11px;font-weight:500">⚠ ${flags} overlap${flags>1?'s':''}</span>`:''}
+      <button class="btn btn-o btn-sm" onclick="showAddModal()">+ Add Row</button>
+    </div>
+  </div>
+  <div class="card" style="padding:0">
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Date</th><th>Employee</th><th>In</th><th>Out</th><th>Hrs</th><th>Location</th><th>OT</th><th title="Mark 2x — Day off or Holiday">2×</th><th>Pay</th><th>Notes</th><th>Actions</th></tr></thead>
+    <tbody>${recs.map(r=>{
+      const c=calcRecord(r);
+      const hol=S.holidays.find(h=>h.date===r.date);
+      const cls=r.del?'del-row':r.flagOverlap&&!r.accepted?'ov':r.edited?'ed':'';
+      const sid=eid(r.id);
+      return`<tr class="${cls}" id="row_${sid}">
+        <td>${fmt(r.date)}${hol?` <span title="${hol.name}" style="color:#E65100;font-size:10px">🎉</span>`:''}</td>
+        <td>${firstName(r.aux)}${r.flagOverlap&&!r.accepted?` <span class="wi" title="Overlapping — click to resolve" onclick="resolveOverlap('${r.id.replace(/'/g,"\\'")}')">⚠</span>`:''}${r.edited?' <span style="font-size:9px;color:#1565C0" title="Manually edited">✎</span>':''}</td>
+        <td>${r.in||'—'}</td><td>${r.out||'—'}</td>
+        <td>${c.hours>0?fH(c.hours):'—'}</td>
+        <td style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.loc}">${r.loc||'—'}</td>
+        <td>${otBadge(r)}</td>
+        <td><label class="tog red"><input type="checkbox" ${r.ot2x?'checked':''} ${r.del?'disabled':''} onchange="toggleOT2x('${r.id.replace(/'/g,"\\'")}')"><span class="sl"></span></label></td>
+        <td>${c.pay>0?fC(c.pay):'—'}</td>
+        <td>${r.dmg?`<span style="color:#C62828;cursor:pointer" title="${r.notes||'Damage reported'}">⚠</span>`:'—'}</td>
+        <td><div style="display:flex;gap:3px">${!r.del
+          ?`<button class="btn btn-o btn-sm" onclick="editRow('${r.id.replace(/'/g,"\\'")}')">✎</button><button class="btn btn-d btn-sm" onclick="deleteRow('${r.id.replace(/'/g,"\\'")}')">✕</button>`
+          :`<button class="btn btn-g btn-sm" onclick="restoreRow('${r.id.replace(/'/g,"\\'")}')">↩</button>`}</div></td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table></div></div>`;
+}
+
+// ── PERFORMANCE ──
+function renderPerformance(){
+  const sec=document.getElementById('sec-performance');
+  const recs=filtered();
+  if(!recs.length){sec.innerHTML='<div class="empty"><div class="empty-ico">★</div><p>No data for this period</p></div>';return;}
+  const empStats={};
+  recs.forEach(r=>{
+    if(!empStats[r.aux])empStats[r.aux]={shifts:0,hours:0,pay:0,byLoc:{}};
+    const c=calcRecord(r);
+    empStats[r.aux].shifts++;empStats[r.aux].hours+=c.hours;empStats[r.aux].pay+=c.pay;
+    if(r.loc){if(!empStats[r.aux].byLoc[r.loc])empStats[r.aux].byLoc[r.loc]={shifts:0,hours:0};
+      empStats[r.aux].byLoc[r.loc].shifts++;empStats[r.aux].byLoc[r.loc].hours+=c.hours;}
+  });
+  const empList=Object.entries(empStats).map(([aux,d])=>({aux,firstName:firstName(aux),...d,avgHrs:d.hours/d.shifts})).sort((a,b)=>a.avgHrs-b.avgHrs);
+  const allDates=[...new Set(recs.map(r=>r.date))].sort();
+  const hmap={};
+  recs.forEach(r=>{if(!hmap[r.aux])hmap[r.aux]={};const c=calcRecord(r);hmap[r.aux][r.date]=(hmap[r.aux][r.date]||0)+c.hours;});
+  const locStats={};
+  recs.forEach(r=>{
+    if(!r.loc)return;
+    if(!locStats[r.loc])locStats[r.loc]={};
+    if(!locStats[r.loc][r.aux])locStats[r.loc][r.aux]={shifts:0,hours:0};
+    const c=calcRecord(r);locStats[r.loc][r.aux].shifts++;locStats[r.loc][r.aux].hours+=c.hours;
+  });
+  const locRanks=Object.entries(locStats).map(([loc,ed])=>{
+    const emps=Object.entries(ed).map(([aux,v])=>({aux,fn:firstName(aux),avg:v.hours/v.shifts})).sort((a,b)=>a.avg-b.avg);
+    return{loc,best:emps[0],worst:emps[emps.length-1],avgAll:emps.reduce((s,e)=>s+e.avg,0)/emps.length};
+  }).sort((a,b)=>a.avgAll-b.avgAll);
+  const byShifts=[...empList].sort((a,b)=>b.shifts-a.shifts);
+  const byHours=[...empList].sort((a,b)=>b.hours-a.hours);
+
+  sec.innerHTML=`
+  <div class="sec-hd"><h2>Employee Performance</h2><span style="font-size:11px;color:#8BA3C7">${monthLabel(S.period)}</span></div>
+  <div class="kgrid">
+    <div class="kc ok"><div class="kl">🥇 Best Avg Time</div><div class="kv" style="font-size:18px">${empList[0]?.firstName||'—'}</div><div class="ks">${empList[0]?fH(empList[0].avgHrs)+' avg/shift':''}</div></div>
+    <div class="kc"><div class="kl">Most Shifts</div><div class="kv" style="font-size:18px">${byShifts[0]?.firstName||'—'}</div><div class="ks">${byShifts[0]?.shifts||0} shifts</div></div>
+    <div class="kc"><div class="kl">Most Hours</div><div class="kv" style="font-size:18px">${byHours[0]?.firstName||'—'}</div><div class="ks">${fH(byHours[0]?.hours||0)}</div></div>
+    <div class="kc"><div class="kl">Team Total</div><div class="kv">${recs.length}</div><div class="ks">${empList.length} employees</div></div>
+  </div>
+  <div class="card">
+    <div class="card-hd"><span class="card-ti">Activity Heatmap</span>
+      <div class="legend">
+        <span class="leg-item"><span class="leg-dot hm0"></span>0h</span>
+        <span class="leg-item"><span class="leg-dot hm1"></span>1–4h</span>
+        <span class="leg-item"><span class="leg-dot hm2"></span>4–6h</span>
+        <span class="leg-item"><span class="leg-dot hm3"></span>6–8h</span>
+        <span class="leg-item"><span class="leg-dot hm4"></span>8h+</span>
+      </div>
+    </div>
+    <div class="hm-wrap"><table class="hm-table">
+      <thead><tr><th style="width:80px"></th>${allDates.map(d=>`<th title="${fmt(d)}">${d.split('-')[2]}</th>`).join('')}</tr></thead>
+      <tbody>${empList.map(e=>`<tr>
+        <td class="hm-name">${e.firstName}</td>
+        ${allDates.map(d=>{const h=hmap[e.aux]?.[d]||0;const cls=h===0?'hm0':h<4?'hm1':h<6?'hm2':h<8?'hm3':'hm4';
+          return`<td><span class="hm-cell ${cls}" title="${e.firstName}: ${fmt(d)} — ${h.toFixed(1)}h"></span></td>`;}).join('')}
+      </tr>`).join('')}</tbody>
+    </table></div>
+  </div>
+  <div class="card" style="padding:0">
+    <div style="padding:14px 18px 8px"><span class="card-ti">Employee Rankings — Average Hours/Shift (lower = more efficient)</span></div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>#</th><th>Employee</th><th>Type</th><th>Shifts</th><th>Total Hrs</th><th>Avg Hrs/Shift</th><th>Total Pay</th></tr></thead>
+      <tbody>${empList.map((e,i)=>{
+        const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':`${i+1}`;
+        const ro=S.roster[e.aux]||{type:'FT'};
+        return`<tr>
+          <td style="font-weight:600">${medal}</td>
+          <td style="font-weight:${i<3?'600':'400'}">${e.firstName}</td>
+          <td><span class="badge ${ro.type==='FT'?'b-ft':'b-pt'}">${ro.type}</span></td>
+          <td>${e.shifts}</td><td>${fH(e.hours)}</td>
+          <td style="font-weight:600;color:${i===0?'#2E7D32':i===empList.length-1?'#C62828':'#1B2A4A'}">${fH(e.avgHrs)}</td>
+          <td>${fC(e.pay)}</td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table></div>
+  </div>
+  <div class="card" style="padding:0">
+    <div style="padding:14px 18px 8px"><span class="card-ti">Best & Worst Average Time by Location</span></div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Location</th><th>Team Avg</th><th>🟢 Best Employee</th><th>Avg</th><th>🔴 Needs Improvement</th><th>Avg</th></tr></thead>
+      <tbody>${locRanks.map(l=>`<tr>
+        <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500" title="${l.loc}">${l.loc}</td>
+        <td>${fH(l.avgAll)}</td>
+        <td style="color:#2E7D32;font-weight:600">${l.best?.fn||'—'}</td>
+        <td>${l.best?fH(l.best.avg):'—'}</td>
+        <td style="color:#C62828;font-weight:600">${l.worst?.fn!==l.best?.fn?l.worst?.fn:'—'}</td>
+        <td>${l.worst?.fn!==l.best?.fn?fH(l.worst.avg):'—'}</td>
+      </tr>`).join('')}</tbody>
+    </table></div>
+  </div>`;
+}
+
+// ── COST CENTER ──
+function renderCostCenter(){
+  const sec=document.getElementById('sec-costcenter');
+  const recs=filtered();
+  if(!recs.length){sec.innerHTML='<div class="empty"><div class="empty-ico">$</div><p>No data for this period</p></div>';return;}
+  const ccMap={};
+  recs.forEach(r=>{
+    const l=r.loc||'(Sin asignar)';
+    if(!ccMap[l])ccMap[l]={shifts:0,hours:0,pay:0,regH:0,otH:0,ot2H:0,emps:new Set()};
+    const c=calcRecord(r);
+    ccMap[l].shifts++;ccMap[l].hours+=c.hours;ccMap[l].pay+=c.pay;ccMap[l].emps.add(r.aux);
+    if(c.otType.startsWith('2x'))ccMap[l].ot2H+=c.hours;
+    else if(c.otType==='1.5x')ccMap[l].otH+=c.hours;
+    else ccMap[l].regH+=c.hours;
+  });
+  const ccList=Object.entries(ccMap).sort((a,b)=>b[1].pay-a[1].pay);
+  const totP=ccList.reduce((s,[,d])=>s+d.pay,0);
+  const mxP=ccList[0]?.[1].pay||1;
+  const locEmp={};
+  recs.forEach(r=>{
+    const l=r.loc||'(Sin asignar)';
+    if(!locEmp[l])locEmp[l]={};
+    if(!locEmp[l][r.aux])locEmp[l][r.aux]={shifts:0,hours:0,pay:0};
+    const c=calcRecord(r);locEmp[l][r.aux].shifts++;locEmp[l][r.aux].hours+=c.hours;locEmp[l][r.aux].pay+=c.pay;
+  });
+  sec.innerHTML=`
+  <div class="sec-hd"><h2>Cost Centers</h2><span style="font-size:12px;color:#8BA3C7">Total: <strong style="color:#1B2A4A">${fC(totP)}</strong></span></div>
+  <div class="card">
+    <div class="card-hd"><span class="card-ti">Cost Distribution</span></div>
+    <div class="bar-wrap">${ccList.map(([loc,d])=>`
+      <div class="bar-row">
+        <div class="bar-label" title="${loc}">${loc}</div>
+        <div class="bar-track"><div class="bar-fill" style="width:${(d.pay/mxP*100).toFixed(1)}%"></div></div>
+        <div class="bar-val">${fC(d.pay)} — ${((d.pay/totP)*100).toFixed(1)}%</div>
+      </div>`).join('')}</div>
+  </div>
+  <div class="card" style="padding:0">
+    <div style="padding:14px 18px 8px"><span class="card-ti">Summary Table</span></div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Location</th><th>Shifts</th><th>Employees</th><th>Total Hrs</th><th>Regular Hrs</th><th>OT 1.5× Hrs</th><th>OT 2× Hrs</th><th>Total Cost</th><th>% of Total</th></tr></thead>
+      <tbody>${ccList.map(([loc,d])=>`<tr>
+        <td style="font-weight:500;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${loc}">${loc}</td>
+        <td>${d.shifts}</td><td>${d.emps.size}</td><td>${fH(d.hours)}</td>
+        <td>${fH(d.regH)}</td><td>${fH(d.otH)}</td><td>${fH(d.ot2H)}</td>
+        <td style="font-weight:600">${fC(d.pay)}</td><td>${((d.pay/totP)*100).toFixed(1)}%</td>
+      </tr>`).join('')}</tbody>
+      <tfoot><tr>
+        <td>TOTAL</td><td>${ccList.reduce((s,[,d])=>s+d.shifts,0)}</td>
+        <td>${new Set(recs.map(r=>r.aux)).size}</td>
+        <td>${fH(ccList.reduce((s,[,d])=>s+d.hours,0))}</td>
+        <td>${fH(ccList.reduce((s,[,d])=>s+d.regH,0))}</td>
+        <td>${fH(ccList.reduce((s,[,d])=>s+d.otH,0))}</td>
+        <td>${fH(ccList.reduce((s,[,d])=>s+d.ot2H,0))}</td>
+        <td>${fC(totP)}</td><td>100%</td>
+      </tr></tfoot>
+    </table></div>
+  </div>
+  <div class="card">
+    <div class="card-hd"><span class="card-ti">Employee Breakdown by Location</span></div>
+    ${ccList.map(([loc])=>`
+      <div style="margin-bottom:16px">
+        <div style="font-size:12px;font-weight:600;color:#1B2A4A;padding:6px 0;border-bottom:1px solid #EEF1F8;margin-bottom:6px">${loc}</div>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>Employee</th><th>Shifts</th><th>Hours</th><th>Pay</th><th>Avg Hrs/Shift</th></tr></thead>
+          <tbody>${Object.entries(locEmp[loc]||{}).sort((a,b)=>b[1].hours-a[1].hours).map(([aux,d])=>`<tr>
+            <td>${firstName(aux)}</td><td>${d.shifts}</td><td>${fH(d.hours)}</td><td>${fC(d.pay)}</td>
+            <td>${fH(d.hours/d.shifts)}</td>
+          </tr>`).join('')}</tbody>
+        </table></div>
+      </div>`).join('')}
+  </div>`;
+}
+
+// ── EMPLOYEES ──
+function renderEmployees(){
+  const sec=document.getElementById('sec-employees');
+  const names=Object.keys(S.roster).sort();
+  sec.innerHTML=`
+  <div class="sec-hd"><h2>Employee Roster</h2>
+    <button class="btn btn-p btn-sm" onclick="showAddEmpModal()">+ Add Employee</button>
+  </div>
+  <div class="card" style="padding:0">
+    ${names.length?`<div class="tbl-wrap"><table>
+      <thead><tr><th>Full Name</th><th>Display</th><th>Type</th><th>Monthly Salary</th><th>Hourly Rate</th><th>FT/PT</th><th>Actions</th></tr></thead>
+      <tbody>${names.map(aux=>{
+        const e=S.roster[aux]||{type:'FT',salary:500};
+        const rate=(e.salary||500)/240;
+        return`<tr>
+          <td style="font-weight:500">${aux}</td>
+          <td style="color:#8BA3C7">${firstName(aux)}</td>
+          <td><span class="badge ${e.type==='FT'?'b-ft':'b-pt'}">${e.type}</span></td>
+          <td>${fC(e.salary||500)}</td>
+          <td>${fC(rate)}/h</td>
+          <td><label class="tog"><input type="checkbox" ${e.type==='FT'?'checked':''} onchange="toggleEmpType('${aux.replace(/'/g,"\\'")}')"><span class="sl"></span></label>
+          <span style="font-size:10px;color:#8BA3C7;margin-left:5px">${e.type==='FT'?'FT':'PT'}</span></td>
+          <td><div style="display:flex;gap:4px">
+            <button class="btn btn-o btn-sm" onclick="editEmployee('${aux.replace(/'/g,"\\'")}')">✎ Edit</button>
+            <button class="btn btn-d btn-sm" onclick="removeEmployee('${aux.replace(/'/g,"\\'")}')">✕</button>
+          </div></td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table></div>`:'<div class="empty"><p>No employees in roster.<br>Sync Sheets or add manually.</p></div>'}
+  </div>
+  <div class="card">
+    <div class="card-hd"><span class="card-ti">Rate Reference</span></div>
+    <div class="rate-info">
+      Base salary: <strong>$500/month ÷ 240h = $2.0833/hr</strong><br>
+      Regular (up to 8h/day): <strong>$2.0833/hr</strong><br>
+      Overtime 1.5× (after 8h/day): <strong style="color:#E65100">$3.1250/hr</strong><br>
+      Holiday / Day off 2×: <strong style="color:#C62828">$4.1667/hr</strong>
+    </div>
+  </div>`;
+}
+
+// ── HOLIDAYS ──
+function renderHolidays(){
+  const sec=document.getElementById('sec-holidays');
+  const sorted=[...S.holidays].sort((a,b)=>a.date.localeCompare(b.date));
+  const years=[...new Set(sorted.map(h=>h.date.substring(0,4)))].sort().reverse();
+  sec.innerHTML=`
+  <div class="sec-hd"><h2>Ecuadorian Holidays</h2>
+    <button class="btn btn-p btn-sm" onclick="showAddHolModal()">+ Add Holiday</button>
+  </div>
+  ${years.map(y=>`<div class="card" style="padding:0;margin-bottom:12px">
+    <div style="padding:12px 18px;border-bottom:1px solid #F0F3F8;display:flex;justify-content:space-between;align-items:center">
+      <span class="card-ti">${y}</span>
+      <span style="font-size:11px;color:#8BA3C7">${sorted.filter(h=>h.date.startsWith(y)).length} holidays</span>
+    </div>
+    <table>
+      <thead><tr><th>Date</th><th>Holiday</th><th>Day</th><th></th></tr></thead>
+      <tbody>${sorted.filter(h=>h.date.startsWith(y)).map(h=>{
+        const d=new Date(h.date+'T12:00:00');
+        return`<tr><td>${fmt(h.date)}</td><td>${h.name}</td>
+          <td style="color:#8BA3C7">
+            ${ ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()]}
+          </td>
+          <td><button class="btn btn-d btn-sm" onclick="removeHoliday('${h.date}','${h.name.replace(/'/g,"\\'")}')">✕</button></td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table>
+  </div>`).join('')}`;
+}
+
+// ── EXPORT ──
+function renderExport(){
+  const recs=filtered();
+  const sz=JSON.stringify({r:S.records,ro:S.roster,h:S.holidays}).length;
+  document.getElementById('sec-export').innerHTML=`
+  <div class="sec-hd"><h2>Export</h2></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px">
+    <div class="card">
+      <div class="card-hd"><span class="card-ti">Excel (.xlsx)</span></div>
+      <p style="font-size:12px;color:#8BA3C7;margin-bottom:12px;line-height:1.6">Exports Raw Data, Employee Summary, and Cost Centers as separate sheets.</p>
+      <button class="btn btn-p" onclick="exportExcel()">↓ Download Excel</button>
+    </div>
+    <div class="card">
+      <div class="card-hd"><span class="card-ti">PDF / Print</span></div>
+      <p style="font-size:12px;color:#8BA3C7;margin-bottom:12px;line-height:1.6">Uses browser print dialog. Select "Save as PDF" as the printer.</p>
+      <button class="btn btn-o" onclick="window.print()">🖨 Print / PDF</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-hd"><span class="card-ti">Data Backup (JSON)</span></div>
+    <p style="font-size:12px;color:#8BA3C7;margin-bottom:12px;line-height:1.6">Export all records + annotations + roster as a JSON file. Use this to back up your data or migrate between browsers.</p>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-o" onclick="exportJSON()">↓ Export Backup</button>
+      <button class="btn btn-o" onclick="importJSON()">↑ Import Backup</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-hd"><span class="card-ti">Storage Status</span></div>
+    <p style="font-size:12px;color:#8BA3C7">${S.records.length} total records · ~${(sz/1024).toFixed(0)}KB used of 5,120KB (${(sz/5242880*100).toFixed(1)}%)</p>
+    ${sz/5242880>0.7?'<p style="font-size:12px;color:#E65100;margin-top:6px">⚠ Storage over 70% — consider exporting a backup and clearing old periods.</p>':''}
+  </div>`;
+}
+
+// ── ROW ACTIONS ──
+function toggleOT2x(id){
+  const r=S.records.find(r=>r.id===id);
+  if(r){r.ot2x=!r.ot2x;r.edited=true;save();refresh();}
+}
+function deleteRow(id){
+  const r=S.records.find(r=>r.id===id);
+  if(r&&confirm(`Delete record for ${firstName(r.aux)} on ${fmt(r.date)}?`)){
+    r.del=true;detectOverlaps();save();refresh();toast('Record deleted','ok');
+  }
+}
+function restoreRow(id){
+  const r=S.records.find(r=>r.id===id);
+  if(r){r.del=false;detectOverlaps();save();refresh();toast('Record restored','ok');}
+}
+function resolveOverlap(id){
+  const r=S.records.find(r=>r.id===id);if(!r)return;
+  showModal(`<h3>⚠ Overlapping Shift — ${firstName(r.aux)}</h3>
+    <p style="font-size:12px;color:#8BA3C7;margin-bottom:8px">${fmt(r.date)} &nbsp; ${r.in} → ${r.out}</p>
+    <p style="font-size:12px;color:#8BA3C7;margin-bottom:14px">Location: ${r.loc||'—'}</p>
+    <p style="font-size:12px;color:#1B2A4A;line-height:1.6">This shift overlaps with another entry for this employee on the same day. How would you like to handle it?</p>
+    <div class="modal-actions">
+      <button class="btn btn-o" onclick="editRow('${id.replace(/'/g,"\\'")}')">✎ Edit Times</button>
+      <button class="btn btn-g" onclick="acceptOverlap('${id.replace(/'/g,"\\'")}')">✓ Accept as-is</button>
+      <button class="btn btn-d" onclick="closeModal();deleteRow('${id.replace(/'/g,"\\'")}')">✕ Delete</button>
+    </div>`);
+}
+function acceptOverlap(id){
+  const r=S.records.find(r=>r.id===id);
+  if(r){r.accepted=true;r.flagOverlap=false;detectOverlaps();save();closeModal();refresh();toast('Overlap accepted','ok');}
+}
+function editRow(id){
+  const r=S.records.find(r=>r.id===id);if(!r)return;
+  closeModal();
+  showModal(`<h3>Edit Record</h3>
+    <div class="frow"><label>Date</label><input type="date" id="e-date" value="${r.date}"></div>
+    <div class="frow"><label>Employee</label><input type="text" id="e-aux" value="${r.aux}"></div>
+    <div class="frow"><label>Clock In</label><input type="time" id="e-in" value="${r.in}"></div>
+    <div class="frow"><label>Clock Out</label><input type="time" id="e-out" value="${r.out}"></div>
+    <div class="frow"><label>Location</label><input type="text" id="e-loc" value="${r.loc||''}"></div>
+    <div class="frow"><label>Notes</label><textarea id="e-notes">${r.notes||''}</textarea></div>
+    <div class="modal-actions">
+      <button class="btn btn-o" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-p" onclick="saveEdit('${id.replace(/'/g,"\\'")}')">Save Changes</button>
+    </div>`);
+}
+function saveEdit(id){
+  const r=S.records.find(r=>r.id===id);if(!r)return;
+  r.date=document.getElementById('e-date').value;
+  r.aux=document.getElementById('e-aux').value.trim();
+  r.in=document.getElementById('e-in').value;
+  r.out=document.getElementById('e-out').value;
+  r.loc=document.getElementById('e-loc').value.trim();
+  r.notes=document.getElementById('e-notes').value.trim();
+  r.edited=true;r.accepted=false;
+  detectOverlaps();save();closeModal();refresh();toast('Record updated','ok');
+}
+function showAddModal(){
+  const empOpts=Object.keys(S.roster).map(n=>`<option>${n}</option>`).join('');
+  showModal(`<h3>Add Record</h3>
+    <div class="frow"><label>Date</label><input type="date" id="a-date" value="${new Date().toISOString().split('T')[0]}"></div>
+    <div class="frow"><label>Employee</label><select id="a-aux">${empOpts||'<option>Add employees first</option>'}</select></div>
+    <div class="frow"><label>Clock In</label><input type="time" id="a-in" value="08:00"></div>
+    <div class="frow"><label>Clock Out</label><input type="time" id="a-out" value="16:00"></div>
+    <div class="frow"><label>Location (Listing)</label><input type="text" id="a-loc" placeholder="Lugar de Trabajo"></div>
+    <div class="modal-actions">
+      <button class="btn btn-o" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-p" onclick="addRow()">Add Record</button>
+    </div>`);
+}
+function addRow(){
+  const date=document.getElementById('a-date').value;
+  const aux=document.getElementById('a-aux').value;
+  const inT=document.getElementById('a-in').value;
+  const outT=document.getElementById('a-out').value;
+  const loc=document.getElementById('a-loc').value.trim();
+  if(!date||!aux||!inT||!outT)return toast('Fill all required fields','err');
+  const id=`${date}|${aux}|${inT}|M${Date.now()}`.replace(/\s/g,'');
+  S.records.push({id,date,aux,in:inT,out:outT,loc,dmg:'',notes:'',ot2x:false,dayoff:false,del:false,edited:true,flagOverlap:false,accepted:false});
+  detectOverlaps();save();closeModal();refresh();toast('Record added','ok');
+}
+
+// ── EMPLOYEE ACTIONS ──
+function toggleEmpType(aux){
+  if(S.roster[aux]){S.roster[aux].type=S.roster[aux].type==='FT'?'PT':'FT';save();renderEmployees();}
+}
+function editEmployee(aux){
+  const e=S.roster[aux]||{type:'FT',salary:500};
+  showModal(`<h3>Edit Employee</h3>
+    <div class="frow"><label>Full Name</label><input type="text" id="ee-n" value="${aux}"></div>
+    <div class="frow"><label>Type</label><select id="ee-t"><option value="FT"${e.type==='FT'?' selected':''}>Full Time</option><option value="PT"${e.type==='PT'?' selected':''}>Part Time</option></select></div>
+    <div class="frow"><label>Monthly Salary (USD)</label><input type="number" id="ee-s" value="${e.salary||500}" step="10" min="0"></div>
+    <div class="modal-actions">
+      <button class="btn btn-o" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-p" onclick="saveEmployee('${aux.replace(/'/g,"\\'")}')">Save</button>
+    </div>`);
+}
+function saveEmployee(old){
+  const name=document.getElementById('ee-n').value.trim();
+  const type=document.getElementById('ee-t').value;
+  const sal=parseFloat(document.getElementById('ee-s').value)||500;
+  if(!name)return toast('Name required','err');
+  if(name!==old){
+    S.roster[name]={...S.roster[old],type,salary:sal};
+    delete S.roster[old];
+    S.records.filter(r=>r.aux===old).forEach(r=>r.aux=name);
+  }else S.roster[name]={type,salary:sal};
+  save();closeModal();renderEmployees();toast('Employee updated','ok');
+}
+function showAddEmpModal(){
+  showModal(`<h3>Add Employee</h3>
+    <div class="frow"><label>Full Name</label><input type="text" id="ne-n" placeholder="e.g. Jennifer Muñoz"></div>
+    <div class="frow"><label>Type</label><select id="ne-t"><option value="FT">Full Time</option><option value="PT">Part Time</option></select></div>
+    <div class="frow"><label>Monthly Salary (USD)</label><input type="number" id="ne-s" value="500" step="10" min="0"></div>
+    <div class="modal-actions">
+      <button class="btn btn-o" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-p" onclick="addEmployee()">Add</button>
+    </div>`);
+}
+function addEmployee(){
+  const name=document.getElementById('ne-n').value.trim();
+  const type=document.getElementById('ne-t').value;
+  const sal=parseFloat(document.getElementById('ne-s').value)||500;
+  if(!name)return toast('Name required','err');
+  S.roster[name]={type,salary:sal};save();closeModal();renderEmployees();toast('Employee added','ok');
+}
+function removeEmployee(aux){
+  if(confirm(`Remove ${aux} from roster? Records will be kept.`)){
+    delete S.roster[aux];save();renderEmployees();toast('Removed from roster','ok');
+  }
+}
+
+// ── HOLIDAY ACTIONS ──
+function showAddHolModal(){
+  showModal(`<h3>Add Holiday</h3>
+    <div class="frow"><label>Date</label><input type="date" id="h-d"></div>
+    <div class="frow"><label>Holiday Name</label><input type="text" id="h-n" placeholder="e.g. Feriado Local"></div>
+    <div class="modal-actions">
+      <button class="btn btn-o" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-p" onclick="addHoliday()">Add</button>
+    </div>`);
+}
+function addHoliday(){
+  const date=document.getElementById('h-d').value;
+  const name=document.getElementById('h-n').value.trim();
+  if(!date||!name)return toast('Date and name required','err');
+  if(S.holidays.some(h=>h.date===date&&h.name===name))return toast('Already exists','warn');
+  S.holidays.push({date,name});S.holidays.sort((a,b)=>a.date.localeCompare(b.date));
+  save();closeModal();renderHolidays();toast('Holiday added','ok');
+}
+function removeHoliday(date,name){
+  if(confirm(`Remove "${name}"?`)){
+    S.holidays=S.holidays.filter(h=>!(h.date===date&&h.name===name));
+    save();renderHolidays();toast('Holiday removed','ok');
+  }
+}
+
+// ── EXPORT FUNCTIONS ──
+function exportExcel(){
+  if(typeof XLSX==='undefined')return toast('XLSX library not loaded yet','err');
+  const wb=XLSX.utils.book_new();
+  const recs=filtered();
+  const raw=recs.map(r=>{const c=calcRecord(r);return{Date:fmt(r.date),Employee:r.aux,'Clock In':r.in,'Clock Out':r.out,Hours:+c.hours.toFixed(2),Location:r.loc,'OT Type':c.otType,'Day Off 2x':r.ot2x?'Yes':'No','Pay USD':+c.pay.toFixed(2),Damage:r.dmg||'',Notes:r.notes||''};});
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(raw),'Raw Data');
+  const empMap={};
+  recs.forEach(r=>{if(!empMap[r.aux])empMap[r.aux]={shifts:0,hours:0,pay:0};const c=calcRecord(r);empMap[r.aux].shifts++;empMap[r.aux].hours+=c.hours;empMap[r.aux].pay+=c.pay;});
+  const empData=Object.entries(empMap).map(([aux,d])=>({Employee:aux,Type:(S.roster[aux]||{type:'FT'}).type,Shifts:d.shifts,'Total Hours':+d.hours.toFixed(2),'Avg Hrs/Shift':+(d.hours/d.shifts).toFixed(2),'Total Pay USD':+d.pay.toFixed(2)})).sort((a,b)=>b['Total Pay USD']-a['Total Pay USD']);
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(empData),'Employees');
+  const ccMap={};
+  recs.forEach(r=>{const l=r.loc||'Unassigned';if(!ccMap[l])ccMap[l]={shifts:0,hours:0,pay:0};const c=calcRecord(r);ccMap[l].shifts++;ccMap[l].hours+=c.hours;ccMap[l].pay+=c.pay;});
+  const ccData=Object.entries(ccMap).map(([loc,d])=>({Location:loc,Shifts:d.shifts,'Total Hours':+d.hours.toFixed(2),'Total Pay USD':+d.pay.toFixed(2)})).sort((a,b)=>b['Total Pay USD']-a['Total Pay USD']);
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(ccData),'Cost Centers');
+  XLSX.writeFile(wb,`payroll_${S.period||'all'}_${new Date().toISOString().split('T')[0]}.xlsx`);
+  toast('Excel downloaded!','ok');
+}
+function exportJSON(){
+  const blob=new Blob([JSON.stringify({records:S.records,roster:S.roster,holidays:S.holidays,exported:new Date().toISOString()},null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download=`payroll_backup_${new Date().toISOString().split('T')[0]}.json`;a.click();
+  toast('Backup exported','ok');
+}
+function importJSON(){
+  const inp=document.createElement('input');inp.type='file';inp.accept='.json';
+  inp.onchange=e=>{
+    const file=e.target.files[0];if(!file)return;
+    const reader=new FileReader();
+    reader.onload=ev=>{
+      try{
+        const d=JSON.parse(ev.target.result);
+        if(d.records)S.records=d.records;
+        if(d.roster)S.roster=d.roster;
+        if(d.holidays)S.holidays=d.holidays;
+        detectOverlaps();save();populatePeriods();refresh();
+        toast(`Imported: ${S.records.length} records`,'ok');
+      }catch(e){toast('Invalid JSON file','err');}
+    };reader.readAsText(file);
+  };inp.click();
+}
+
+// ── MODAL ──
+function showModal(html){document.getElementById('modal').innerHTML=html;document.getElementById('modal-bg').style.display='flex';}
+function closeModal(){document.getElementById('modal-bg').style.display='none';}
+
+// ── TOAST ──
+function toast(msg,type='ok'){
+  const t=document.getElementById('toast');
+  const el=document.createElement('div');
+  el.className=`ti t${type==='err'?'err':type==='warn'?'warn':'ok'}`;
+  el.textContent=msg;t.appendChild(el);
+  setTimeout(()=>el.remove(),3500);
+}
+
+// ── NAV CLICKS ──
+document.querySelectorAll('.nav').forEach(n=>n.addEventListener('click',()=>navigate(n.dataset.sec)));
+
+// ── INIT ──
+function init(){
+  loadStore();
+  detectOverlaps();
+  populatePeriods();
+  const months=[...new Set(S.records.map(r=>r.date.substring(0,7)))].sort();
+  if(months.length){
+    const cur=new Date().toISOString().substring(0,7);
+    S.period=months.includes(cur)?cur:months[months.length-1];
+    document.getElementById('period-sel').value=S.period;
+  }
+  navigate('overview');
+}
+init();
+</script>
+</body>
+</html>
