@@ -164,6 +164,7 @@ tfoot td{font-weight:600;background:#F4F6FB;border-top:2px solid #E0E6F0;border-
     </div>
     <div class="tb-r">
       <button class="btn btn-o" onclick="loadFromSheets()" id="load-btn">⟳ Sync Sheets</button>
+      <button class="btn btn-o" onclick="showPasteCSV()" title="Paste CSV manually">📋 Paste CSV</button>
       <button class="btn btn-p" onclick="navigate('export')">↓ Export</button>
     </div>
   </div>
@@ -301,24 +302,78 @@ function filtered(inclDel=false){
 async function loadFromSheets(){
   const btn=document.getElementById('load-btn');
   btn.disabled=true;btn.textContent='⟳ Loading...';
-  const url=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&cachebust=${Date.now()}`;
-  try{
-    const res=await fetch(url);
-    if(!res.ok)throw new Error('HTTP '+res.status);
-    const text=await res.text();
-    const rows=parseCSV(text);
-    const added=mergeRecords(rows);
-    updateRoster(rows);
-    detectOverlaps();
-    save();
-    populatePeriods();
-    refresh();
-    toast(`Synced: ${rows.length} rows, ${added} new records.`,'ok');
-  }catch(e){
-    toast('Could not reach the sheet. Ensure it is shared publicly (Anyone with link → Viewer).','err');
-    console.error(e);
+  const directUrl=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&cachebust=${Date.now()}`;
+  const proxyUrls=[
+    directUrl,
+    `https://corsproxy.io/?${encodeURIComponent(directUrl)}`,
+    `https://api.allorigins.win/raw?url=${encodeURIComponent(directUrl)}`
+  ];
+  let lastErr='';
+  for(let i=0;i<proxyUrls.length;i++){
+    try{
+      btn.textContent=i===0?'⟳ Loading...':`⟳ Retry ${i}/${proxyUrls.length-1}...`;
+      const res=await fetch(proxyUrls[i],{redirect:'follow'});
+      if(!res.ok){lastErr=`HTTP ${res.status}`;continue;}
+      const text=await res.text();
+      if(!text||text.length<20){lastErr='Empty response';continue;}
+      if(text.toLowerCase().includes('<html')&&text.toLowerCase().includes('sign in')){
+        lastErr='Sheet is not publicly shared';continue;
+      }
+      const rows=parseCSV(text);
+      if(!rows.length){lastErr='No valid rows found in CSV';continue;}
+      const added=mergeRecords(rows);
+      updateRoster(rows);
+      detectOverlaps();save();populatePeriods();refresh();
+      toast(`Synced: ${rows.length} rows, ${added} new records.`,'ok');
+      btn.disabled=false;btn.textContent='⟳ Sync Sheets';
+      return;
+    }catch(e){lastErr=e.message||'Network error';}
   }
+  showSyncErrorModal(lastErr);
   btn.disabled=false;btn.textContent='⟳ Sync Sheets';
+}
+
+function showSyncErrorModal(err){
+  showModal(`<h3>⚠ Could not sync from Google Sheets</h3>
+    <p style="font-size:12px;color:#A32D2D;background:#FEF3F2;padding:8px 12px;border-radius:6px;margin-bottom:14px">Error: ${err||'Unknown'}</p>
+    <p style="font-size:12px;color:#1B2A4A;line-height:1.7;margin-bottom:12px"><strong>Possible causes & fixes:</strong></p>
+    <ol style="font-size:12px;color:#1B2A4A;line-height:1.8;padding-left:20px;margin-bottom:14px">
+      <li><strong>Sheet not public.</strong> Open the sheet → Share → "Anyone with the link" → Viewer.</li>
+      <li><strong>Preview environment limits.</strong> The Claude preview iframe may block external fetches. Once you deploy to GitHub Pages, sync should work.</li>
+      <li><strong>CORS issue.</strong> The fallback proxies were also tried and failed.</li>
+    </ol>
+    <p style="font-size:12px;color:#1B2A4A;line-height:1.6;margin-bottom:12px"><strong>Workaround:</strong> Use <em>📋 Paste CSV</em> to load data manually until deployed.</p>
+    <div class="modal-actions">
+      <button class="btn btn-o" onclick="closeModal()">Close</button>
+      <button class="btn btn-p" onclick="closeModal();showPasteCSV()">📋 Paste CSV instead</button>
+    </div>`);
+}
+
+function showPasteCSV(){
+  showModal(`<h3>📋 Paste CSV Data</h3>
+    <p style="font-size:12px;color:#8BA3C7;line-height:1.6;margin-bottom:10px">
+      In Google Sheets: <strong>File → Download → Comma-separated values (.csv)</strong>, then open with Notepad/TextEdit and paste here.<br>
+      Or copy directly from the sheet (Ctrl+A, Ctrl+C).
+    </p>
+    <div class="frow"><label>CSV / TSV content (with header row)</label>
+      <textarea id="paste-csv" style="height:240px;font-family:monospace;font-size:11px" placeholder="Timestamp,Auxiliar,Hora de Ingreso,Hora de Salida,Lugar de Trabajo,..."></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-o" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-p" onclick="processPastedCSV()">Import</button>
+    </div>`);
+}
+
+function processPastedCSV(){
+  let txt=document.getElementById('paste-csv').value.trim();
+  if(!txt)return toast('Paste some content first','err');
+  if(txt.includes('\t')&&!txt.split('\n')[0].includes(','))txt=txt.replace(/\t/g,',');
+  const rows=parseCSV(txt);
+  if(!rows.length)return toast('No valid rows parsed. Check that header row is included.','err');
+  const added=mergeRecords(rows);
+  updateRoster(rows);
+  detectOverlaps();save();populatePeriods();closeModal();refresh();
+  toast(`Imported ${rows.length} rows, ${added} new.`,'ok');
 }
 
 function parseCSVLine(line){
