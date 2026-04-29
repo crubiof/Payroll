@@ -1776,14 +1776,20 @@ async function init(){
   save();
   detectOverlaps();
   populatePeriods();
+  // Auto-load from cloud BEFORE first render (only if local is empty)
+  if(S.records.length===0&&CLOUD_SYNC_URL){
+    const ovEl=document.getElementById('sec-overview');
+    if(ovEl)ovEl.innerHTML='<div class="empty"><div class="empty-ico">☁</div><p>Loading from cloud...</p></div>';
+    document.querySelector('.nav.on')?.classList.remove('on');
+    document.querySelector('.nav[data-sec="overview"]')?.classList.add('on');
+    document.getElementById('sec-overview').classList.add('on');
+    try{
+      await cloudLoad(true);
+      if(S.records.length>0)toast(`Loaded ${S.records.length} records from cloud`,'ok');
+    }catch(e){console.error('Auto cloud load failed:',e);}
+  }
   navigate('overview');
   updateCloudStatus();
-  // Auto-load from cloud on first launch (only if local is empty)
-  if(S.records.length===0&&CLOUD_SYNC_URL){
-    toast('Checking cloud for saved data...','ok');
-    await cloudLoad(true);
-    if(S.records.length>0)toast(`Loaded ${S.records.length} records from cloud`,'ok');
-  }
   // Refresh cloud status every minute
   setInterval(updateCloudStatus,60000);
 }
