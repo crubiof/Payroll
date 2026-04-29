@@ -189,8 +189,11 @@ tfoot td{font-weight:600;background:#F4F6FB;border-top:2px solid #E0E6F0;border-
     <div class="tb-l">
       <span class="tb-title" id="tb-title">Overview</span>
       <span class="tb-sub" id="tb-sub">All time</span>
+      <span id="cloud-status" style="font-size:10px;color:#1565C0;background:#E3F2FD;padding:2px 8px;border-radius:10px;display:none">☁</span>
     </div>
     <div class="tb-r">
+      <button class="btn btn-o" onclick="cloudLoad()" id="cloud-load-btn" title="Load saved edits from Google Sheets">☁ Load Cloud</button>
+      <button class="btn btn-o" onclick="cloudSave()" id="cloud-save-btn" title="Save edits to Google Sheets">☁ Save Cloud</button>
       <button class="btn btn-o" onclick="loadFromSheets()" id="load-btn">⟳ Sync Sheets</button>
       <button class="btn btn-o" onclick="document.getElementById('file-input').click()" title="Upload XLSX or CSV file">📁 Upload File</button>
       <button class="btn btn-o" onclick="showPasteCSV()" title="Paste tab-separated or CSV data">📋 Paste Data</button>
@@ -218,6 +221,7 @@ tfoot td{font-weight:600;background:#F4F6FB;border-top:2px solid #E0E6F0;border-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
 const SHEET_ID='1l6XtGN_h7k9IKmbwuvoalggDoJABcDhY2E1VNzUVIO4';
+const CLOUD_SYNC_URL='https://script.google.com/macros/s/AKfycbxVR12uZjqKPp0kGSPOxogDHKrONa2OXnL7NeSNk3BE8Z7FhTk9lV0CETZoapdioya0/exec';
 const BASE_SALARY=500, BASE_SALARY_PT=250;
 const RATE_REG=BASE_SALARY/160;        // $3.1250/hr — regular hours
 const RATE_OT=RATE_REG;                // $3.1250/hr — 1.5× hours paid at SAME rate (no premium, just tracked)
@@ -463,6 +467,72 @@ function applySort(arr,tableId,defaults){
 }
 function thS(tableId,col,label,type){
   return`<th class="${sortClass(tableId,col)}" onclick="sortBy('${tableId}','${col}','${type||'string'}')">${label}${sortIcon(tableId,col)}</th>`;
+}
+
+// ── CLOUD SYNC ──
+async function cloudSave(silent){
+  if(!CLOUD_SYNC_URL)return toast('Cloud sync URL not configured','err');
+  const btn=document.getElementById('cloud-save-btn');
+  if(btn){btn.disabled=true;btn.textContent='☁ Saving...';}
+  try{
+    const payload={records:S.records,roster:S.roster,holidays:S.holidays,adjustments:S.adjustments,savedFrom:navigator.userAgent.substring(0,80),savedAt:new Date().toISOString()};
+    // Use no-cors-friendly approach: text/plain to avoid preflight
+    const res=await fetch(CLOUD_SYNC_URL,{method:'POST',mode:'cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload),redirect:'follow'});
+    const data=await res.json();
+    if(!data.ok)throw new Error(data.error||'Unknown error');
+    localStorage.setItem('pd_lastCloudSave',new Date().toISOString());
+    if(!silent)toast(`Saved to cloud · ${(data.size/1024).toFixed(0)}KB`,'ok');
+    updateCloudStatus();
+  }catch(e){
+    if(!silent)toast('Cloud save failed: '+(e.message||'Network error'),'err');
+    console.error('Cloud save error:',e);
+  }
+  if(btn){btn.disabled=false;btn.textContent='☁ Save Cloud';}
+}
+async function cloudLoad(silent){
+  if(!CLOUD_SYNC_URL)return toast('Cloud sync URL not configured','err');
+  const btn=document.getElementById('cloud-load-btn');
+  if(btn){btn.disabled=true;btn.textContent='☁ Loading...';}
+  try{
+    const res=await fetch(CLOUD_SYNC_URL+'?action=load&t='+Date.now(),{method:'GET',mode:'cors',redirect:'follow'});
+    const data=await res.json();
+    if(!data.ok)throw new Error(data.error||'Unknown error');
+    if(!data.state){if(!silent)toast('Cloud is empty — save first','warn');return;}
+    if(!silent&&S.records.length>0){
+      const cloudCount=(data.state.records||[]).length;
+      if(!confirm(`Replace ${S.records.length} local records with ${cloudCount} from cloud?\n\nLocal edits not yet saved to cloud will be lost.`))return;
+    }
+    S.records=data.state.records||[];
+    S.roster=data.state.roster||{};
+    S.holidays=data.state.holidays||[...EC_HOL];
+    S.adjustments=data.state.adjustments||[];
+    localStorage.setItem('pd_lastCloudLoad',new Date().toISOString());
+    detectOverlaps();save();populatePeriods();refresh();updateCloudStatus();
+    if(!silent)toast(`Loaded ${S.records.length} records · saved ${data.savedAt?new Date(data.savedAt).toLocaleString():'unknown'}`,'ok');
+  }catch(e){
+    if(!silent)toast('Cloud load failed: '+(e.message||'Network error'),'err');
+    console.error('Cloud load error:',e);
+  }
+  if(btn){btn.disabled=false;btn.textContent='☁ Load Cloud';}
+}
+function updateCloudStatus(){
+  const lastSave=localStorage.getItem('pd_lastCloudSave');
+  const lastLoad=localStorage.getItem('pd_lastCloudLoad');
+  const el=document.getElementById('cloud-status');
+  if(!el)return;
+  if(lastSave||lastLoad){
+    const t=new Date(lastSave||lastLoad);
+    const mins=Math.floor((Date.now()-t.getTime())/60000);
+    let label;
+    if(mins<1)label='just now';
+    else if(mins<60)label=`${mins}m ago`;
+    else if(mins<1440)label=`${Math.floor(mins/60)}h ago`;
+    else label=`${Math.floor(mins/1440)}d ago`;
+    el.textContent=`☁ ${lastSave?'Saved':'Loaded'} ${label}`;
+    el.style.display='inline';
+  }else{
+    el.style.display='none';
+  }
 }
 
 // ── CSV FETCH ──
@@ -1677,7 +1747,7 @@ function toast(msg,type='ok'){
 document.querySelectorAll('.nav').forEach(n=>n.addEventListener('click',()=>navigate(n.dataset.sec)));
 
 // ── INIT ──
-function init(){
+async function init(){
   loadStore();
   // Migrate roster: assign default roles + special cases for Ivan & Jennifer
   Object.keys(S.roster).forEach(name=>{
@@ -1692,6 +1762,15 @@ function init(){
   detectOverlaps();
   populatePeriods();
   navigate('overview');
+  updateCloudStatus();
+  // Auto-load from cloud on first launch (only if local is empty)
+  if(S.records.length===0&&CLOUD_SYNC_URL){
+    toast('Checking cloud for saved data...','ok');
+    await cloudLoad(true);
+    if(S.records.length>0)toast(`Loaded ${S.records.length} records from cloud`,'ok');
+  }
+  // Refresh cloud status every minute
+  setInterval(updateCloudStatus,60000);
 }
 init();
 </script>
