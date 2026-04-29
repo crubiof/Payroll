@@ -469,38 +469,55 @@ function thS(tableId,col,label,type){
 async function loadFromSheets(){
   const btn=document.getElementById('load-btn');
   btn.disabled=true;btn.textContent='⟳ Loading...';
+  // Detect sandboxed environment (Claude.ai artifact preview blocks external fetches)
+  const inSandbox=(()=>{try{return window.location.hostname.includes('claude.ai')||window.location.protocol==='blob:'||window.location.protocol==='about:'||window.parent!==window;}catch(e){return true;}})();
   const directUrl=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&cachebust=${Date.now()}`;
-  const proxyUrls=[directUrl,`https://corsproxy.io/?${encodeURIComponent(directUrl)}`,`https://api.allorigins.win/raw?url=${encodeURIComponent(directUrl)}`];
-  let lastErr='';
+  const proxyUrls=[directUrl,`https://corsproxy.io/?${encodeURIComponent(directUrl)}`,`https://api.allorigins.win/raw?url=${encodeURIComponent(directUrl)}`,`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(directUrl)}`];
+  const errors=[];
   for(let i=0;i<proxyUrls.length;i++){
     try{
-      btn.textContent=i===0?'⟳ Loading...':`⟳ Retry ${i}/${proxyUrls.length-1}...`;
-      const res=await fetch(proxyUrls[i],{redirect:'follow'});
-      if(!res.ok){lastErr=`HTTP ${res.status}`;continue;}
+      btn.textContent=i===0?'⟳ Direct...':`⟳ Proxy ${i}...`;
+      const ctrl=new AbortController();const tmo=setTimeout(()=>ctrl.abort(),12000);
+      const res=await fetch(proxyUrls[i],{redirect:'follow',signal:ctrl.signal});
+      clearTimeout(tmo);
+      if(!res.ok){errors.push(`#${i+1}: HTTP ${res.status}`);continue;}
       const text=await res.text();
-      if(!text||text.length<20){lastErr='Empty response';continue;}
-      if(text.toLowerCase().includes('<html')&&text.toLowerCase().includes('sign in')){lastErr='Sheet is not publicly shared';continue;}
+      if(!text||text.length<20){errors.push(`#${i+1}: Empty response`);continue;}
+      if(text.toLowerCase().includes('<html')&&(text.toLowerCase().includes('sign in')||text.toLowerCase().includes('login'))){errors.push(`#${i+1}: Sheet not public`);continue;}
       const rows=parseCSV(text);
-      if(!rows.length){lastErr='No valid rows found';continue;}
+      if(!rows.length){errors.push(`#${i+1}: No valid rows`);continue;}
       const added=mergeRecords(rows);updateRoster(rows);detectOverlaps();save();populatePeriods();refresh();
       toast(`Synced: ${rows.length} rows, ${added} new records.`,'ok');
       btn.disabled=false;btn.textContent='⟳ Sync Sheets';return;
-    }catch(e){lastErr=e.message||'Network error';}
+    }catch(e){errors.push(`#${i+1}: ${e.name==='AbortError'?'Timeout':e.message||'Fetch blocked'}`);}
   }
-  showSyncErrorModal(lastErr);
+  showSyncErrorModal(errors,inSandbox);
   btn.disabled=false;btn.textContent='⟳ Sync Sheets';
 }
-function showSyncErrorModal(err){
-  showModal(`<h3>⚠ Could not sync from Google Sheets</h3>
-    <p style="font-size:12px;color:#A32D2D;background:#FEF3F2;padding:8px 12px;border-radius:6px;margin-bottom:14px">Error: ${err||'Unknown'}</p>
-    <p style="font-size:12px;color:#1B2A4A;line-height:1.7;margin-bottom:12px"><strong>Workarounds:</strong></p>
+function showSyncErrorModal(errors,inSandbox){
+  const directUrl=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv`;
+  const sheetUrl=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit`;
+  showModal(`<h3>⚠ Sync Failed — ${inSandbox?'expected in this preview':'check sheet sharing'}</h3>
+    ${inSandbox?`<div style="background:#FFF3E0;border:1px solid #FFCC80;border-radius:8px;padding:12px 14px;font-size:12px;color:#1B2A4A;line-height:1.6;margin-bottom:14px">
+      <strong style="color:#E65100">This is the Claude.ai preview iframe.</strong> It sandboxes cross-origin fetches for security, so direct sync is blocked here even when the sheet is public.<br><br>
+      ✅ <strong>Once you deploy this <code>index.html</code> to GitHub Pages</strong> (or any real web host), Sync Sheets will work directly.<br>
+      ⏩ For now, use <strong>📁 Upload File</strong> or <strong>📋 Paste Data</strong> — they bypass the network entirely.
+    </div>`:''}
+    <details style="font-size:11px;color:#6B82A8;margin-bottom:12px">
+      <summary style="cursor:pointer;font-weight:500">Technical details (${errors.length} attempts)</summary>
+      <ul style="margin:6px 0 0 18px;padding:0">${errors.map(e=>`<li style="margin-bottom:2px">${e}</li>`).join('')}</ul>
+    </details>
+    <p style="font-size:12px;color:#1B2A4A;line-height:1.7;margin-bottom:8px"><strong>Verify the sheet is public:</strong></p>
     <ol style="font-size:12px;color:#1B2A4A;line-height:1.8;padding-left:20px;margin-bottom:14px">
-      <li>Make sure the sheet is shared as "Anyone with the link → Viewer".</li>
-      <li>Use <em>📁 Upload File</em> to load an XLSX directly.</li>
-      <li>Use <em>📋 Paste Data</em> to paste copied content.</li>
+      <li>Open <a href="${sheetUrl}" target="_blank" style="color:#1B2A4A">your sheet</a> → click <strong>Share</strong> (top right).</li>
+      <li>Set "General access" → <strong>Anyone with the link</strong> → <strong>Viewer</strong>.</li>
+      <li>Test the CSV link in a private tab: <a href="${directUrl}" target="_blank" style="color:#1B2A4A;word-break:break-all">${directUrl.substring(0,60)}…</a> &mdash; should download a CSV without asking to sign in.</li>
     </ol>
-    <div class="modal-actions"><button class="btn btn-o" onclick="closeModal()">Close</button>
-      <button class="btn btn-p" onclick="closeModal();showPasteCSV()">📋 Paste Data instead</button></div>`);
+    <div class="modal-actions">
+      <button class="btn btn-o" onclick="closeModal()">Close</button>
+      <button class="btn btn-o" onclick="closeModal();document.getElementById('file-input').click()">📁 Upload File</button>
+      <button class="btn btn-p" onclick="closeModal();showPasteCSV()">📋 Paste Data</button>
+    </div>`);
 }
 function showPasteCSV(){
   showModal(`<h3>📋 Paste Data</h3>
