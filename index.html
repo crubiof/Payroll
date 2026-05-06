@@ -1024,19 +1024,17 @@ function detectOverlaps(){
 
 // ── PERIOD/NAV ──
 function populatePeriods(){
-  const sel=document.getElementById('period-sel');
   const dfrom=document.getElementById('dfrom'),dto=document.getElementById('dto');
-  if(!sel||!dfrom||!dto)return;
-  if(!S.period){sel.value='all';dfrom.value='';dto.value='';}
-  else if(S.period.includes('~')){
+  if(!dfrom||!dto)return;
+  if(!S.period){dfrom.value='';dto.value='';return;}
+  if(S.period.includes('~')){
     const[from,to]=S.period.split('~');
-    dfrom.value=from||'';dto.value=to||'';sel.value='custom';
+    dfrom.value=from||'';dto.value=to||'';
   }else if(S.period.length===7){
     const[y,m]=S.period.split('-');
     const last=new Date(parseInt(y),parseInt(m),0).getDate();
     dfrom.value=S.period+'-01';
     dto.value=S.period+'-'+String(last).padStart(2,'0');
-    sel.value='custom';
   }
 }
 function applyPreset(p){
@@ -1060,6 +1058,7 @@ function applyPreset(p){
   else if(p==='thisyear'){from=now.getFullYear()+'-01-01';to=monthEndStr;}
   else if(p==='lastyear'){const y=now.getFullYear()-1;from=y+'-01-01';to=y+'-12-31';}
   else if(p==='custom'){document.getElementById('dfrom').focus();return;}
+  document.getElementById('period-sel').value=p;
   document.getElementById('dfrom').value=from;
   document.getElementById('dto').value=to;
   S.period=(from||to)?`${from}~${to}`:'';
@@ -1181,6 +1180,7 @@ function renderRawData(){
     <div style="display:flex;gap:8px;align-items:center">
       ${flags?`<span style="color:#E65100;font-size:11px;font-weight:500">⚠ ${flags} overlap${flags>1?'s':''}</span>`:''}
       <button class="btn btn-o btn-sm" onclick="showAddModal()">+ Add Row</button>
+      <button class="btn btn-d btn-sm" onclick="discardAllRecords()" title="Delete all records to start fresh from Sheets">🗑 Discard All</button>
     </div>
   </div>
   <div class="card" style="padding:0">
@@ -1856,6 +1856,44 @@ function renderExport(){
 }
 
 // ── ROW ACTIONS ──
+const DISCARD_PASSWORD='16735330';
+function discardAllRecords(){
+  const count=S.records.length;
+  if(count===0)return toast('No records to discard','warn');
+  showModal(`<h3>🗑 Discard All Records?</h3>
+    <p style="font-size:12px;color:#1B2A4A;line-height:1.7;margin-bottom:14px">This will permanently delete <strong>${count} records</strong> from this device's local data.</p>
+    <div style="background:#F4F6FB;border-radius:8px;padding:12px;font-size:11px;line-height:1.7;color:#6B82A8;margin-bottom:14px">
+      <strong style="color:#1B2A4A">What's deleted:</strong> All clock-in/out records (active + deleted)<br>
+      <strong style="color:#1B2A4A">What's kept:</strong> Roster, holidays, adjustments<br>
+      <strong style="color:#1B2A4A">Cloud:</strong> Unchanged — your gist still has the previous data as a recoverable revision
+    </div>
+    <p style="font-size:12px;color:#1B2A4A;line-height:1.7;margin-bottom:14px"><strong>After discarding:</strong></p>
+    <ol style="font-size:12px;color:#1B2A4A;line-height:1.8;padding-left:20px;margin-bottom:14px">
+      <li>Click <strong>⟳ Sync Sheets</strong> or <strong>📁 Upload File</strong> to import fresh data</li>
+      <li>Review/edit as needed</li>
+      <li>Click <strong>☁ Save Cloud</strong> to update the cloud copy</li>
+    </ol>
+    <div class="frow"><label>🔒 Confirmation password required</label>
+      <input type="password" id="discard-pw" placeholder="Enter password to confirm" autocomplete="off" onkeydown="if(event.key==='Enter')confirmDiscardAll()">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-o" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-d" onclick="confirmDiscardAll()">🗑 Discard ${count} records</button>
+    </div>`);
+  setTimeout(()=>document.getElementById('discard-pw')?.focus(),50);
+}
+function confirmDiscardAll(){
+  const pw=document.getElementById('discard-pw')?.value||'';
+  if(pw!==DISCARD_PASSWORD){
+    const inp=document.getElementById('discard-pw');
+    if(inp){inp.value='';inp.style.borderColor='#A32D2D';inp.placeholder='❌ Wrong password — try again';inp.focus();}
+    toast('Wrong password','err');return;
+  }
+  const count=S.records.length;
+  S.records=[];
+  detectOverlaps();save();closeModal();refresh();
+  toast(`Discarded ${count} records. Click ⟳ Sync Sheets to import fresh data.`,'ok');
+}
 function toggleOT2x(id){const r=S.records.find(r=>r.id===id);if(r){r.ot2x=!r.ot2x;r.edited=true;save();refresh();}}
 function deleteRow(id){const r=S.records.find(r=>r.id===id);if(r&&confirm(`Delete record for ${firstName(r.aux)} on ${fmt(r.date)}?`)){r.del=true;detectOverlaps();save();refresh();toast('Deleted','ok');}}
 function restoreRow(id){const r=S.records.find(r=>r.id===id);if(r){r.del=false;detectOverlaps();save();refresh();toast('Restored','ok');}}
@@ -2086,7 +2124,6 @@ async function init(){
   });
   save();
   detectOverlaps();
-  populatePeriods();
   // Auto-load from Gist on first launch (only if local is empty AND token configured)
   if(S.records.length===0&&gistConfigured()){
     const ovEl=document.getElementById('sec-overview');
@@ -2099,6 +2136,9 @@ async function init(){
       if(S.records.length>0)toast(`Loaded ${S.records.length} records from cloud`,'ok');
     }catch(e){console.error('Auto cloud load failed:',e);}
   }
+  // Default period to "Last Month" on first load (unless user already had a period set)
+  if(!S.period){applyPreset('lastmonth');}
+  else{populatePeriods();}
   navigate('overview');
   updateCloudStatus();
   setInterval(updateCloudStatus,60000);
