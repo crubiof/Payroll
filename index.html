@@ -521,17 +521,37 @@ async function gistSave(silent){
 
 async function gistFetchCurrent(){
   if(!gistConfigured())return null;
-  const res=await fetch(`https://api.github.com/gists/${GIST_ID}?t=${Date.now()}`,{headers:{'Authorization':'Bearer '+getGistToken(),'Accept':'application/vnd.github+json'}});
-  if(!res.ok)throw new Error(`HTTP ${res.status}`);
-  const meta=await res.json();
-  const file=meta.files?.[GIST_FILENAME];
-  if(!file)throw new Error(`File "${GIST_FILENAME}" not found in gist`);
-  let content=file.content;
-  if(file.truncated&&file.raw_url){
-    const raw=await fetch(file.raw_url+'?t='+Date.now(),{headers:{'Authorization':'Bearer '+getGistToken()}});
-    content=await raw.text();
+  const ctrl=new AbortController();
+  const tmo=setTimeout(()=>ctrl.abort(),20000);
+  try{
+    const res=await fetch(`https://api.github.com/gists/${GIST_ID}?t=${Date.now()}`,{headers:{'Authorization':'Bearer '+getGistToken(),'Accept':'application/vnd.github+json'},signal:ctrl.signal});
+    clearTimeout(tmo);
+    if(!res.ok){
+      let body='';try{body=(await res.text()).substring(0,150);}catch(e){}
+      if(res.status===401)throw new Error('Token rejected (401) — open ⚙ Cloud Settings, paste a fresh token');
+      if(res.status===404)throw new Error(`Gist ${GIST_ID.substring(0,8)}... not found (404) — verify the Gist ID`);
+      if(res.status===403)throw new Error('Forbidden (403) — token lacks gist permission, or rate-limited');
+      throw new Error(`HTTP ${res.status}: ${body}`);
+    }
+    const meta=await res.json();
+    const file=meta.files?.[GIST_FILENAME];
+    if(!file){
+      const available=Object.keys(meta.files||{}).join(', ')||'(none)';
+      throw new Error(`File "${GIST_FILENAME}" not found. Available: ${available}`);
+    }
+    let content=file.content;
+    if(file.truncated&&file.raw_url){
+      const raw=await fetch(file.raw_url+'?t='+Date.now(),{headers:{'Authorization':'Bearer '+getGistToken()}});
+      if(!raw.ok)throw new Error(`Could not fetch raw content: HTTP ${raw.status}`);
+      content=await raw.text();
+    }
+    if(!content||!content.trim())return null;
+    try{return JSON.parse(content);}catch(e){throw new Error('Gist content is not valid JSON: '+e.message);}
+  }catch(e){
+    clearTimeout(tmo);
+    if(e.name==='AbortError')throw new Error('Timeout (20s) reaching GitHub');
+    throw e;
   }
-  try{return JSON.parse(content);}catch(e){throw new Error('Gist content is not valid JSON');}
 }
 
 async function gistLoad(silent){
