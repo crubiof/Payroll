@@ -522,14 +522,14 @@ async function gistSave(silent){
 async function gistFetchCurrent(){
   if(!gistConfigured())return null;
   const ctrl=new AbortController();
-  const tmo=setTimeout(()=>ctrl.abort(),20000);
+  const tmo=setTimeout(()=>ctrl.abort(),30000);
   try{
+    // First try the basic API call
     const res=await fetch(`https://api.github.com/gists/${GIST_ID}?t=${Date.now()}`,{headers:{'Authorization':'Bearer '+getGistToken(),'Accept':'application/vnd.github+json'},signal:ctrl.signal});
-    clearTimeout(tmo);
     if(!res.ok){
       let body='';try{body=(await res.text()).substring(0,150);}catch(e){}
       if(res.status===401)throw new Error('Token rejected (401) — open ⚙ Cloud Settings, paste a fresh token');
-      if(res.status===404)throw new Error(`Gist ${GIST_ID.substring(0,8)}... not found (404) — verify the Gist ID`);
+      if(res.status===404)throw new Error(`Gist not found (404) — verify the Gist ID`);
       if(res.status===403)throw new Error('Forbidden (403) — token lacks gist permission, or rate-limited');
       throw new Error(`HTTP ${res.status}: ${body}`);
     }
@@ -539,17 +539,32 @@ async function gistFetchCurrent(){
       const available=Object.keys(meta.files||{}).join(', ')||'(none)';
       throw new Error(`File "${GIST_FILENAME}" not found. Available: ${available}`);
     }
-    let content=file.content;
-    if(file.truncated&&file.raw_url){
-      const raw=await fetch(file.raw_url+'?t='+Date.now(),{headers:{'Authorization':'Bearer '+getGistToken()}});
-      if(!raw.ok)throw new Error(`Could not fetch raw content: HTTP ${raw.status}`);
-      content=await raw.text();
+    let content=file.content||'';
+    // If content is truncated, fetch via gist commits API (which honors Authorization, unlike gist.githubusercontent.com)
+    if(file.truncated){
+      console.log('[Gist] Content truncated, fetching full version via commits API...');
+      const commitsRes=await fetch(`https://api.github.com/gists/${GIST_ID}/commits?per_page=1&t=${Date.now()}`,{headers:{'Authorization':'Bearer '+getGistToken(),'Accept':'application/vnd.github+json'},signal:ctrl.signal});
+      if(!commitsRes.ok)throw new Error(`Failed to fetch latest commit: HTTP ${commitsRes.status}`);
+      const commits=await commitsRes.json();
+      if(!commits.length)throw new Error('No commits found in gist');
+      const latestVersion=commits[0].version;
+      const fullRes=await fetch(`https://api.github.com/gists/${GIST_ID}/${latestVersion}?t=${Date.now()}`,{headers:{'Authorization':'Bearer '+getGistToken(),'Accept':'application/vnd.github+json'},signal:ctrl.signal});
+      if(!fullRes.ok)throw new Error(`Failed to fetch full revision: HTTP ${fullRes.status}`);
+      const fullData=await fullRes.json();
+      const fullFile=fullData.files?.[GIST_FILENAME];
+      if(!fullFile)throw new Error('File missing in revision');
+      content=fullFile.content||'';
+      // If STILL truncated even at version-specific endpoint, file > 10MB and we can't fetch it
+      if(fullFile.truncated){
+        throw new Error(`File too large (${(fullFile.size/1024/1024).toFixed(1)}MB) — exceeds GitHub API limits. Consider splitting your data.`);
+      }
     }
+    clearTimeout(tmo);
     if(!content||!content.trim())return null;
     try{return JSON.parse(content);}catch(e){throw new Error('Gist content is not valid JSON: '+e.message);}
   }catch(e){
     clearTimeout(tmo);
-    if(e.name==='AbortError')throw new Error('Timeout (20s) reaching GitHub');
+    if(e.name==='AbortError')throw new Error('Timeout (30s) reaching GitHub');
     throw e;
   }
 }
@@ -603,14 +618,14 @@ async function gistShowRevisions(){
         const r=await fetch(`https://api.github.com/gists/${GIST_ID}/${h.version}`,{headers:{'Authorization':'Bearer '+getGistToken(),'Accept':'application/vnd.github+json'}});
         if(r.ok){
           const d=await r.json();
-          let content=d.files?.[GIST_FILENAME]?.content||'{}';
-          if(d.files?.[GIST_FILENAME]?.truncated){
-            const rawR=await fetch(d.files[GIST_FILENAME].raw_url,{headers:{'Authorization':'Bearer '+getGistToken()}});
-            content=await rawR.text();
+          const f=d.files?.[GIST_FILENAME];
+          if(f&&!f.truncated){
+            const s=JSON.parse(f.content||'{}');
+            recCount=(s.records||[]).length;
+            savedAt=s.savedAt||'';
+          }else if(f&&f.truncated){
+            recCount='large';
           }
-          const s=JSON.parse(content);
-          recCount=(s.records||[]).length;
-          savedAt=s.savedAt||'';
         }
       }catch(e){}
       const dt=new Date(h.committed_at);
@@ -619,7 +634,7 @@ async function gistShowRevisions(){
         <td style="font-size:11px;color:#8BA3C7">${i+1}${isCurrent?' <span style="color:#2E7D32;font-weight:600">(current)</span>':''}</td>
         <td style="font-size:11px">${dt.toLocaleString()}</td>
         <td style="font-size:11px;font-weight:500;color:${recCount==='?'?'#8BA3C7':recCount===0?'#A32D2D':'#1B2A4A'}">${recCount}</td>
-        <td><button class="btn btn-o btn-sm" onclick="gistRestore('${h.version}',${recCount})" ${isCurrent?'disabled':''}>${isCurrent?'—':'Restore'}</button></td>
+        <td><button class="btn btn-o btn-sm" onclick="gistRestore('${h.version}',${recCount==='large'||recCount==='?'?0:recCount})" ${isCurrent||recCount==='large'?'disabled':''}>${isCurrent?'—':recCount==='large'?'(too large)':'Restore'}</button></td>
       </tr>`;
     }));
     document.getElementById('modal').innerHTML=`<h3>☁ Revision History</h3>
@@ -642,11 +657,10 @@ async function gistRestore(version,recCount){
     const r=await fetch(`https://api.github.com/gists/${GIST_ID}/${version}`,{headers:{'Authorization':'Bearer '+getGistToken(),'Accept':'application/vnd.github+json'}});
     if(!r.ok)throw new Error(`HTTP ${r.status}`);
     const d=await r.json();
-    let content=d.files?.[GIST_FILENAME]?.content||'{}';
-    if(d.files?.[GIST_FILENAME]?.truncated){
-      const rawR=await fetch(d.files[GIST_FILENAME].raw_url,{headers:{'Authorization':'Bearer '+getGistToken()}});
-      content=await rawR.text();
-    }
+    const f=d.files?.[GIST_FILENAME];
+    if(!f)throw new Error('File missing in revision');
+    if(f.truncated)throw new Error('Revision content too large to fetch via API');
+    const content=f.content||'';
     const state=JSON.parse(content);
     S.records=Array.isArray(state.records)?state.records:[];
     S.roster=(state.roster&&typeof state.roster==='object')?state.roster:{};
