@@ -514,12 +514,24 @@ async function cloudLoad(silent){
       const cloudCount=(data.state.records||[]).length;
       if(!confirm(`Replace ${S.records.length} local records with ${cloudCount} from cloud?\n\nLocal edits not yet saved to cloud will be lost.`))return;
     }
-    S.records=data.state.records||[];
-    S.roster=data.state.roster||{};
-    S.holidays=data.state.holidays||[...EC_HOL];
-    S.adjustments=data.state.adjustments||[];
+    S.records=Array.isArray(data.state.records)?data.state.records:[];
+    S.roster=(data.state.roster&&typeof data.state.roster==='object')?data.state.roster:{};
+    S.holidays=Array.isArray(data.state.holidays)?data.state.holidays:[...EC_HOL];
+    S.adjustments=Array.isArray(data.state.adjustments)?data.state.adjustments:[];
     localStorage.setItem('pd_lastCloudLoad',new Date().toISOString());
-    detectOverlaps();save();populatePeriods();refresh();updateCloudStatus();
+    detectOverlaps();
+    save();
+    populatePeriods();
+    // Reset filter to "all" if previously set period yields no records
+    if(S.period&&filtered().length===0&&S.records.length>0){
+      S.period='';
+      const sel=document.getElementById('period-sel');if(sel)sel.value='all';
+      const dfrom=document.getElementById('dfrom');if(dfrom)dfrom.value='';
+      const dto=document.getElementById('dto');if(dto)dto.value='';
+    }
+    refresh();
+    updateCloudStatus();
+    console.log('[Cloud Load] Records:',S.records.length,'Roster:',Object.keys(S.roster).length,'Adjustments:',S.adjustments.length);
     if(!silent)toast(`Loaded ${S.records.length} records · saved ${data.savedAt?new Date(data.savedAt).toLocaleString():'unknown'}`,'ok');
   }catch(e){
     clearTimeout(tmo);
