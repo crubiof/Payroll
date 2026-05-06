@@ -472,6 +472,10 @@ function thS(tableId,col,label,type){
 // ── CLOUD SYNC ──
 async function cloudSave(silent){
   if(!CLOUD_SYNC_URL)return toast('Cloud sync URL not configured','err');
+  // Safety guard: warn if saving empty state over potentially non-empty cloud
+  if(!silent&&S.records.length===0){
+    if(!confirm('⚠ You have 0 records loaded.\n\nSaving now will OVERWRITE the cloud with an empty state, potentially destroying data saved from another device.\n\nAre you sure you want to save an empty state?'))return;
+  }
   const btn=document.getElementById('cloud-save-btn');
   if(btn){btn.disabled=true;btn.textContent='☁ Saving...';}
   const ctrl=new AbortController();
@@ -485,7 +489,7 @@ async function cloudSave(silent){
     let data;try{data=JSON.parse(text);}catch(e){throw new Error('Bad response: '+text.substring(0,80));}
     if(!data.ok)throw new Error(data.error||'Unknown error');
     localStorage.setItem('pd_lastCloudSave',new Date().toISOString());
-    if(!silent)toast(`Saved to cloud · ${(data.size/1024).toFixed(0)}KB`,'ok');
+    if(!silent)toast(`Saved to cloud · ${(data.size/1024).toFixed(0)}KB · ${S.records.length} records`,'ok');
     updateCloudStatus();
   }catch(e){
     clearTimeout(tmo);
