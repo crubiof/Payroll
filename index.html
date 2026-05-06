@@ -497,18 +497,23 @@ async function gistSave(silent){
   const btn=document.getElementById('gist-save-btn');
   if(btn){btn.disabled=true;btn.textContent='☁ Saving...';}
   try{
+    // Save as compact JSON (no pretty-print) to maximize space and stay under truncation limits
     const payload={records:S.records,roster:S.roster,holidays:S.holidays,adjustments:S.adjustments,savedAt:new Date().toISOString(),savedFrom:navigator.userAgent.substring(0,80),recordCount:S.records.length};
-    const body={files:{[GIST_FILENAME]:{content:JSON.stringify(payload,null,2)}}};
+    const compactJson=JSON.stringify(payload);
+    const sizeKB=(compactJson.length/1024).toFixed(0);
+    console.log(`[Gist] Saving ${sizeKB}KB compact JSON (${S.records.length} records)`);
+    const body={files:{[GIST_FILENAME]:{content:compactJson}}};
     const res=await fetch(`https://api.github.com/gists/${GIST_ID}`,{method:'PATCH',headers:{'Authorization':'Bearer '+getGistToken(),'Accept':'application/vnd.github+json','Content-Type':'application/json'},body:JSON.stringify(body)});
     if(!res.ok){
       const errText=await res.text();
       if(res.status===401)throw new Error('Token rejected — open Settings and re-enter token');
       if(res.status===404)throw new Error('Gist not found — verify Gist ID in Settings');
+      if(res.status===422)throw new Error(`File too large (${sizeKB}KB) — GitHub limit is 100MB per gist file`);
       throw new Error(`GitHub ${res.status}: ${errText.substring(0,80)}`);
     }
     const data=await res.json();
     localStorage.setItem('pd_lastGistSave',new Date().toISOString());
-    const sz=data.files?.[GIST_FILENAME]?.size||0;
+    const sz=data.files?.[GIST_FILENAME]?.size||compactJson.length;
     if(!silent)toast(`☁ Saved · ${(sz/1024).toFixed(0)}KB · ${S.records.length} records`,'ok');
     updateCloudStatus();
   }catch(e){
@@ -524,7 +529,6 @@ async function gistFetchCurrent(){
   const ctrl=new AbortController();
   const tmo=setTimeout(()=>ctrl.abort(),30000);
   try{
-    // First try the basic API call
     const res=await fetch(`https://api.github.com/gists/${GIST_ID}?t=${Date.now()}`,{headers:{'Authorization':'Bearer '+getGistToken(),'Accept':'application/vnd.github+json'},signal:ctrl.signal});
     if(!res.ok){
       let body='';try{body=(await res.text()).substring(0,150);}catch(e){}
@@ -540,24 +544,57 @@ async function gistFetchCurrent(){
       throw new Error(`File "${GIST_FILENAME}" not found. Available: ${available}`);
     }
     let content=file.content||'';
-    // If content is truncated, fetch via gist commits API (which honors Authorization, unlike gist.githubusercontent.com)
+    // For files >1MB, GitHub returns truncated content. Fetch the full content via the git blob API.
     if(file.truncated){
-      console.log('[Gist] Content truncated, fetching full version via commits API...');
-      const commitsRes=await fetch(`https://api.github.com/gists/${GIST_ID}/commits?per_page=1&t=${Date.now()}`,{headers:{'Authorization':'Bearer '+getGistToken(),'Accept':'application/vnd.github+json'},signal:ctrl.signal});
-      if(!commitsRes.ok)throw new Error(`Failed to fetch latest commit: HTTP ${commitsRes.status}`);
-      const commits=await commitsRes.json();
-      if(!commits.length)throw new Error('No commits found in gist');
-      const latestVersion=commits[0].version;
-      const fullRes=await fetch(`https://api.github.com/gists/${GIST_ID}/${latestVersion}?t=${Date.now()}`,{headers:{'Authorization':'Bearer '+getGistToken(),'Accept':'application/vnd.github+json'},signal:ctrl.signal});
-      if(!fullRes.ok)throw new Error(`Failed to fetch full revision: HTTP ${fullRes.status}`);
-      const fullData=await fullRes.json();
-      const fullFile=fullData.files?.[GIST_FILENAME];
-      if(!fullFile)throw new Error('File missing in revision');
-      content=fullFile.content||'';
-      // If STILL truncated even at version-specific endpoint, file > 10MB and we can't fetch it
-      if(fullFile.truncated){
-        throw new Error(`File too large (${(fullFile.size/1024/1024).toFixed(1)}MB) — exceeds GitHub API limits. Consider splitting your data.`);
+      console.log('[Gist] Content truncated, fetching via git blob SHA:',file.raw_url);
+      // Method: git clone the gist URL → just hit the blob via the gist's git interface
+      // Use the gist's git tree to find the blob SHA, then fetch the blob directly
+      const treeRes=await fetch(`https://api.github.com/gists/${GIST_ID}?t=${Date.now()}`,{headers:{'Authorization':'Bearer '+getGistToken(),'Accept':'application/vnd.github+json'},signal:ctrl.signal});
+      if(!treeRes.ok)throw new Error(`Tree fetch failed: HTTP ${treeRes.status}`);
+      const treeMeta=await treeRes.json();
+      const tFile=treeMeta.files?.[GIST_FILENAME];
+      if(!tFile)throw new Error('File missing in tree');
+      // Try multiple strategies in order
+      // Strategy 1: extract version from raw_url and use commit API
+      const rawUrlMatch=(tFile.raw_url||'').match(/\/raw\/([a-f0-9]+)\//);
+      const version=rawUrlMatch?rawUrlMatch[1]:null;
+      // Strategy 2: get the gist's owner login and use the git blob endpoint
+      const ownerLogin=treeMeta.owner?.login;
+      let fullContent=null;
+      // Try CORS proxy for the raw URL (last resort, works because raw URL doesn't need auth for the owner's secret gist if known)
+      // Actually: secret gist raw URLs need auth that fails CORS, so use a proxy
+      const rawUrl=tFile.raw_url;
+      if(rawUrl){
+        try{
+          console.log('[Gist] Trying CORS proxy for raw URL...');
+          const proxied=await fetch(`https://corsproxy.io/?${encodeURIComponent(rawUrl+'?t='+Date.now())}`,{signal:ctrl.signal});
+          if(proxied.ok){
+            const txt=await proxied.text();
+            if(txt&&txt.length>100&&!txt.toLowerCase().includes('<!doctype')){
+              fullContent=txt;
+              console.log('[Gist] Got full content via proxy:',txt.length,'bytes');
+            }
+          }
+        }catch(e){console.warn('[Gist] Proxy attempt failed:',e.message);}
       }
+      // Try alternative proxy
+      if(!fullContent&&rawUrl){
+        try{
+          console.log('[Gist] Trying alternative proxy...');
+          const proxied=await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(rawUrl+'?t='+Date.now())}`,{signal:ctrl.signal});
+          if(proxied.ok){
+            const txt=await proxied.text();
+            if(txt&&txt.length>100&&!txt.toLowerCase().includes('<!doctype')){
+              fullContent=txt;
+              console.log('[Gist] Got full content via allorigins:',txt.length,'bytes');
+            }
+          }
+        }catch(e){console.warn('[Gist] Alt proxy failed:',e.message);}
+      }
+      if(!fullContent){
+        throw new Error(`File too large (${(tFile.size/1024/1024).toFixed(1)}MB) for direct fetch. Proxies also failed. Consider exporting JSON backup as alternative.`);
+      }
+      content=fullContent;
     }
     clearTimeout(tmo);
     if(!content||!content.trim())return null;
