@@ -147,7 +147,7 @@ tfoot td{font-weight:600;background:#F4F6FB;border-top:2px solid #E0E6F0;border-
 <aside id="sb">
   <div class="sb-logo">
     <h1>Payroll Dashboard</h1>
-    <p>Auxiliares — Airbnb</p>
+    <p>Auxiliares — Airbnb · <span id="sb-version">v1.0.0</span></p>
   </div>
   <div class="sb-sect">
     <span class="sb-lbl">Main</span>
@@ -226,6 +226,8 @@ const SHEET_ID='1l6XtGN_h7k9IKmbwuvoalggDoJABcDhY2E1VNzUVIO4';
 const CLOUD_SYNC_URL='https://script.google.com/macros/s/AKfycbxVR12uZjqKPp0kGSPOxogDHKrONa2OXnL7NeSNk3BE8Z7FhTk9lV0CETZoapdioya0/exec';
 const GIST_ID='455ebba2cb1ebb758085fbc0c9ce7c83';
 const GIST_FILENAME='payroll-state.json';
+const APP_VERSION='1.0.0';
+const APP_BUILD='2026-05-06';
 const BASE_SALARY=500, BASE_SALARY_PT=250;
 const RATE_REG=BASE_SALARY/160;        // $3.1250/hr — regular hours
 const RATE_OT=RATE_REG;                // $3.1250/hr — 1.5× hours paid at SAME rate (no premium, just tracked)
@@ -569,7 +571,9 @@ async function gistFetchCurrent(){
           console.log('[Gist] Trying CORS proxy for raw URL...');
           const proxied=await fetch(`https://corsproxy.io/?${encodeURIComponent(rawUrl+'?t='+Date.now())}`,{signal:ctrl.signal});
           if(proxied.ok){
-            const txt=await proxied.text();
+            // Force UTF-8 decoding to handle Spanish characters (ñ, ó, é, etc.)
+            const buf=await proxied.arrayBuffer();
+            const txt=new TextDecoder('utf-8').decode(buf);
             if(txt&&txt.length>100&&!txt.toLowerCase().includes('<!doctype')){
               fullContent=txt;
               console.log('[Gist] Got full content via proxy:',txt.length,'bytes');
@@ -583,7 +587,8 @@ async function gistFetchCurrent(){
           console.log('[Gist] Trying alternative proxy...');
           const proxied=await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(rawUrl+'?t='+Date.now())}`,{signal:ctrl.signal});
           if(proxied.ok){
-            const txt=await proxied.text();
+            const buf=await proxied.arrayBuffer();
+            const txt=new TextDecoder('utf-8').decode(buf);
             if(txt&&txt.length>100&&!txt.toLowerCase().includes('<!doctype')){
               fullContent=txt;
               console.log('[Gist] Got full content via allorigins:',txt.length,'bytes');
@@ -2113,6 +2118,9 @@ document.querySelectorAll('.nav').forEach(n=>n.addEventListener('click',()=>navi
 
 // ── INIT ──
 async function init(){
+  // Show version in sidebar
+  const verEl=document.getElementById('sb-version');
+  if(verEl){verEl.textContent='v'+APP_VERSION;verEl.title='Build '+APP_BUILD;}
   loadStore();
   Object.keys(S.roster).forEach(name=>{
     if(!S.roster[name].role){
