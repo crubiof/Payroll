@@ -164,6 +164,7 @@ tfoot td{font-weight:600;background:#F4F6FB;border-top:2px solid #E0E6F0;border-
     <span class="sb-lbl">Setup</span>
     <div class="nav" data-sec="employees"><span class="nav-ico">◎</span>Employees</div>
     <div class="nav" data-sec="holidays"><span class="nav-ico">✦</span>Holidays</div>
+    <div class="nav" onclick="showSettingsModal()"><span class="nav-ico">⚙</span>Cloud Settings</div>
     <div class="nav" data-sec="export"><span class="nav-ico">↓</span>Export</div>
   </div>
   <div class="sb-footer">
@@ -192,8 +193,9 @@ tfoot td{font-weight:600;background:#F4F6FB;border-top:2px solid #E0E6F0;border-
       <span id="cloud-status" style="font-size:10px;color:#1565C0;background:#E3F2FD;padding:2px 8px;border-radius:10px;display:none">☁</span>
     </div>
     <div class="tb-r">
-      <button class="btn btn-o" onclick="cloudLoad()" id="cloud-load-btn" title="Load saved edits from Google Sheets">☁ Load Cloud</button>
-      <button class="btn btn-o" onclick="cloudSave()" id="cloud-save-btn" title="Save edits to Google Sheets">☁ Save Cloud</button>
+      <button class="btn btn-o" onclick="gistLoad()" id="gist-load-btn" title="Load latest from Gist">☁ Load Cloud</button>
+      <button class="btn btn-o" onclick="gistSave()" id="gist-save-btn" title="Save to Gist (creates new revision)">☁ Save Cloud</button>
+      <button class="btn btn-o" onclick="gistShowRevisions()" title="Browse and restore prior revisions">⏱ Revisions</button>
       <button class="btn btn-o" onclick="loadFromSheets()" id="load-btn">⟳ Sync Sheets</button>
       <button class="btn btn-o" onclick="document.getElementById('file-input').click()" title="Upload XLSX or CSV file">📁 Upload File</button>
       <button class="btn btn-o" onclick="showPasteCSV()" title="Paste tab-separated or CSV data">📋 Paste Data</button>
@@ -222,6 +224,8 @@ tfoot td{font-weight:600;background:#F4F6FB;border-top:2px solid #E0E6F0;border-
 <script>
 const SHEET_ID='1l6XtGN_h7k9IKmbwuvoalggDoJABcDhY2E1VNzUVIO4';
 const CLOUD_SYNC_URL='https://script.google.com/macros/s/AKfycbxVR12uZjqKPp0kGSPOxogDHKrONa2OXnL7NeSNk3BE8Z7FhTk9lV0CETZoapdioya0/exec';
+const GIST_ID='455ebba2cb1ebb758085fbc0c9ce7c83';
+const GIST_FILENAME='payroll-state.json';
 const BASE_SALARY=500, BASE_SALARY_PT=250;
 const RATE_REG=BASE_SALARY/160;        // $3.1250/hr — regular hours
 const RATE_OT=RATE_REG;                // $3.1250/hr — 1.5× hours paid at SAME rate (no premium, just tracked)
@@ -469,12 +473,225 @@ function thS(tableId,col,label,type){
   return`<th class="${sortClass(tableId,col)}" onclick="sortBy('${tableId}','${col}','${type||'string'}')">${label}${sortIcon(tableId,col)}</th>`;
 }
 
-// ── CLOUD SYNC ──
+// ── GIST SYNC (GitHub-backed, with revision history) ──
+function getGistToken(){return localStorage.getItem('pd_gistToken')||'';}
+function setGistToken(t){if(t)localStorage.setItem('pd_gistToken',t);else localStorage.removeItem('pd_gistToken');}
+function gistConfigured(){return!!(GIST_ID&&getGistToken());}
+
+async function gistSave(silent){
+  if(!gistConfigured()){if(!silent)showSettingsModal();return;}
+  // Safety: warn on empty save
+  if(!silent&&S.records.length===0){
+    if(!confirm('⚠ You have 0 records loaded.\n\nSaving now will store an empty state as a new revision (previous revisions remain accessible to restore).\n\nProceed anyway?'))return;
+  }
+  // Safety: warn if local count is much smaller than current gist
+  if(!silent&&S.records.length>0&&S.records.length<100){
+    try{
+      const cur=await gistFetchCurrent();
+      const cloudCount=cur?.records?.length||0;
+      if(cloudCount>S.records.length*5){
+        if(!confirm(`⚠ Cloud has ${cloudCount} records but you only have ${S.records.length} loaded locally.\n\nSaving now creates a new revision with your smaller dataset.\nThe ${cloudCount}-record version will still be recoverable from revision history.\n\nProceed?`))return;
+      }
+    }catch(e){console.warn('Pre-save check skipped:',e);}
+  }
+  const btn=document.getElementById('gist-save-btn');
+  if(btn){btn.disabled=true;btn.textContent='☁ Saving...';}
+  try{
+    const payload={records:S.records,roster:S.roster,holidays:S.holidays,adjustments:S.adjustments,savedAt:new Date().toISOString(),savedFrom:navigator.userAgent.substring(0,80),recordCount:S.records.length};
+    const body={files:{[GIST_FILENAME]:{content:JSON.stringify(payload,null,2)}}};
+    const res=await fetch(`https://api.github.com/gists/${GIST_ID}`,{method:'PATCH',headers:{'Authorization':'Bearer '+getGistToken(),'Accept':'application/vnd.github+json','Content-Type':'application/json'},body:JSON.stringify(body)});
+    if(!res.ok){
+      const errText=await res.text();
+      if(res.status===401)throw new Error('Token rejected — open Settings and re-enter token');
+      if(res.status===404)throw new Error('Gist not found — verify Gist ID in Settings');
+      throw new Error(`GitHub ${res.status}: ${errText.substring(0,80)}`);
+    }
+    const data=await res.json();
+    localStorage.setItem('pd_lastGistSave',new Date().toISOString());
+    const sz=data.files?.[GIST_FILENAME]?.size||0;
+    if(!silent)toast(`☁ Saved · ${(sz/1024).toFixed(0)}KB · ${S.records.length} records`,'ok');
+    updateCloudStatus();
+  }catch(e){
+    if(!silent)toast('Save failed: '+(e.message||'Network error'),'err');
+    console.error('Gist save error:',e);
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent='☁ Save Cloud';}
+  }
+}
+
+async function gistFetchCurrent(){
+  if(!gistConfigured())return null;
+  const res=await fetch(`https://api.github.com/gists/${GIST_ID}?t=${Date.now()}`,{headers:{'Authorization':'Bearer '+getGistToken(),'Accept':'application/vnd.github+json'}});
+  if(!res.ok)throw new Error(`HTTP ${res.status}`);
+  const meta=await res.json();
+  const file=meta.files?.[GIST_FILENAME];
+  if(!file)throw new Error(`File "${GIST_FILENAME}" not found in gist`);
+  let content=file.content;
+  if(file.truncated&&file.raw_url){
+    const raw=await fetch(file.raw_url+'?t='+Date.now(),{headers:{'Authorization':'Bearer '+getGistToken()}});
+    content=await raw.text();
+  }
+  try{return JSON.parse(content);}catch(e){throw new Error('Gist content is not valid JSON');}
+}
+
+async function gistLoad(silent){
+  if(!gistConfigured()){if(!silent)showSettingsModal();return;}
+  const btn=document.getElementById('gist-load-btn');
+  if(btn){btn.disabled=true;btn.textContent='☁ Loading...';}
+  try{
+    const state=await gistFetchCurrent();
+    if(!state||(!state.records&&!state.roster)){if(!silent)toast('Gist is empty or invalid','warn');return;}
+    if(!silent&&S.records.length>0){
+      const cloudCount=(state.records||[]).length;
+      if(!confirm(`Replace ${S.records.length} local records with ${cloudCount} from cloud?\n\nLocal edits not yet saved will be lost.\n(Tip: any prior cloud version is recoverable from Revisions if needed.)`))return;
+    }
+    S.records=Array.isArray(state.records)?state.records:[];
+    S.roster=(state.roster&&typeof state.roster==='object')?state.roster:{};
+    S.holidays=Array.isArray(state.holidays)?state.holidays:[...EC_HOL];
+    S.adjustments=Array.isArray(state.adjustments)?state.adjustments:[];
+    localStorage.setItem('pd_lastGistLoad',new Date().toISOString());
+    detectOverlaps();save();populatePeriods();
+    if(S.period&&filtered().length===0&&S.records.length>0){
+      S.period='';const sel=document.getElementById('period-sel');if(sel)sel.value='all';
+      const dfrom=document.getElementById('dfrom');if(dfrom)dfrom.value='';
+      const dto=document.getElementById('dto');if(dto)dto.value='';
+    }
+    refresh();updateCloudStatus();
+    console.log('[Gist Load] Records:',S.records.length,'Saved at:',state.savedAt);
+    if(!silent)toast(`☁ Loaded ${S.records.length} records · ${state.savedAt?new Date(state.savedAt).toLocaleString():''}`,'ok');
+  }catch(e){
+    if(!silent)toast('Load failed: '+(e.message||'Network error'),'err');
+    console.error('Gist load error:',e);
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent='☁ Load Cloud';}
+  }
+}
+
+async function gistShowRevisions(){
+  if(!gistConfigured()){showSettingsModal();return;}
+  showModal(`<h3>☁ Revision History</h3>
+    <p style="font-size:12px;color:#8BA3C7;margin-bottom:12px">Loading revisions from GitHub...</p>`);
+  try{
+    const res=await fetch(`https://api.github.com/gists/${GIST_ID}?t=${Date.now()}`,{headers:{'Authorization':'Bearer '+getGistToken(),'Accept':'application/vnd.github+json'}});
+    if(!res.ok)throw new Error(`HTTP ${res.status}`);
+    const meta=await res.json();
+    const history=meta.history||[];
+    if(!history.length){document.getElementById('modal').innerHTML=`<h3>☁ Revision History</h3><p style="font-size:12px;color:#8BA3C7">No revisions yet.</p><div class="modal-actions"><button class="btn btn-o" onclick="closeModal()">Close</button></div>`;return;}
+    const rowsHtml=await Promise.all(history.slice(0,30).map(async(h,i)=>{
+      let recCount='?';let savedAt='';
+      try{
+        const r=await fetch(`https://api.github.com/gists/${GIST_ID}/${h.version}`,{headers:{'Authorization':'Bearer '+getGistToken(),'Accept':'application/vnd.github+json'}});
+        if(r.ok){
+          const d=await r.json();
+          let content=d.files?.[GIST_FILENAME]?.content||'{}';
+          if(d.files?.[GIST_FILENAME]?.truncated){
+            const rawR=await fetch(d.files[GIST_FILENAME].raw_url,{headers:{'Authorization':'Bearer '+getGistToken()}});
+            content=await rawR.text();
+          }
+          const s=JSON.parse(content);
+          recCount=(s.records||[]).length;
+          savedAt=s.savedAt||'';
+        }
+      }catch(e){}
+      const dt=new Date(h.committed_at);
+      const isCurrent=i===0;
+      return`<tr ${isCurrent?'style="background:#E8F5E9"':''}>
+        <td style="font-size:11px;color:#8BA3C7">${i+1}${isCurrent?' <span style="color:#2E7D32;font-weight:600">(current)</span>':''}</td>
+        <td style="font-size:11px">${dt.toLocaleString()}</td>
+        <td style="font-size:11px;font-weight:500;color:${recCount==='?'?'#8BA3C7':recCount===0?'#A32D2D':'#1B2A4A'}">${recCount}</td>
+        <td><button class="btn btn-o btn-sm" onclick="gistRestore('${h.version}',${recCount})" ${isCurrent?'disabled':''}>${isCurrent?'—':'Restore'}</button></td>
+      </tr>`;
+    }));
+    document.getElementById('modal').innerHTML=`<h3>☁ Revision History</h3>
+      <p style="font-size:12px;color:#8BA3C7;margin-bottom:12px">Showing last ${Math.min(30,history.length)} revisions${history.length>30?` of ${history.length}`:''}. Restoring loads that revision into your dashboard (you can then Save Cloud to make it the current version).</p>
+      <div class="tbl-wrap" style="max-height:400px;overflow-y:auto"><table>
+        <thead><tr><th>#</th><th>Saved At</th><th>Records</th><th></th></tr></thead>
+        <tbody>${rowsHtml.join('')}</tbody>
+      </table></div>
+      <div class="modal-actions"><button class="btn btn-o" onclick="closeModal()">Close</button></div>`;
+  }catch(e){
+    document.getElementById('modal').innerHTML=`<h3>☁ Revision History</h3><p style="font-size:12px;color:#A32D2D">Error: ${e.message}</p><div class="modal-actions"><button class="btn btn-o" onclick="closeModal()">Close</button></div>`;
+  }
+}
+
+async function gistRestore(version,recCount){
+  if(!confirm(`Restore this revision (${recCount} records) into your dashboard?\n\nYour current local data will be replaced. The current cloud version is preserved — you can save again to make this revision the latest.`))return;
+  closeModal();
+  toast('Loading revision...','ok');
+  try{
+    const r=await fetch(`https://api.github.com/gists/${GIST_ID}/${version}`,{headers:{'Authorization':'Bearer '+getGistToken(),'Accept':'application/vnd.github+json'}});
+    if(!r.ok)throw new Error(`HTTP ${r.status}`);
+    const d=await r.json();
+    let content=d.files?.[GIST_FILENAME]?.content||'{}';
+    if(d.files?.[GIST_FILENAME]?.truncated){
+      const rawR=await fetch(d.files[GIST_FILENAME].raw_url,{headers:{'Authorization':'Bearer '+getGistToken()}});
+      content=await rawR.text();
+    }
+    const state=JSON.parse(content);
+    S.records=Array.isArray(state.records)?state.records:[];
+    S.roster=(state.roster&&typeof state.roster==='object')?state.roster:{};
+    S.holidays=Array.isArray(state.holidays)?state.holidays:[...EC_HOL];
+    S.adjustments=Array.isArray(state.adjustments)?state.adjustments:[];
+    detectOverlaps();save();populatePeriods();refresh();
+    toast(`Restored revision: ${S.records.length} records loaded. Click ☁ Save Cloud to make this current.`,'ok');
+  }catch(e){toast('Restore failed: '+e.message,'err');}
+}
+
+function showSettingsModal(){
+  const tok=getGistToken();
+  const masked=tok?(tok.substring(0,12)+'...'+tok.substring(tok.length-4)):'';
+  showModal(`<h3>⚙ Cloud Sync Settings</h3>
+    <p style="font-size:12px;color:#8BA3C7;line-height:1.6;margin-bottom:14px">Cloud sync uses a GitHub Gist with full revision history. Every save creates a recoverable version.</p>
+    <div class="frow"><label>Gist ID <span style="color:#8BA3C7;font-weight:400">(read-only)</span></label>
+      <input type="text" value="${GIST_ID}" readonly style="font-family:monospace;background:#F4F6FB"></div>
+    <div class="frow"><label>GitHub Personal Access Token ${tok?`<span style="color:#2E7D32">✓ saved (${masked})</span>`:'<span style="color:#A32D2D">⚠ not configured</span>'}</label>
+      <input type="password" id="gist-token-in" placeholder="${tok?'Leave blank to keep existing · Paste new to replace':'github_pat_...'}" style="font-family:monospace">
+    </div>
+    <p style="font-size:11px;color:#8BA3C7;line-height:1.6;margin-bottom:14px">
+      🔒 Stored only in your browser's localStorage. Never sent anywhere except GitHub directly.<br>
+      🔄 To rotate: paste a new token here and click Save. Old token can be revoked at GitHub.
+    </p>
+    <div class="modal-actions">
+      <button class="btn btn-d btn-sm" onclick="if(confirm('Remove token from this browser?')){setGistToken('');closeModal();toast('Token removed','ok');updateCloudStatus();}" ${tok?'':'style="display:none"'}>Remove Token</button>
+      <button class="btn btn-o" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-p" onclick="saveSettings()">Save Settings</button>
+    </div>`);
+  setTimeout(()=>document.getElementById('gist-token-in')?.focus(),50);
+}
+function saveSettings(){
+  const tok=document.getElementById('gist-token-in').value.trim();
+  if(tok){
+    if(!tok.startsWith('github_pat_')&&!tok.startsWith('ghp_'))return toast('Token should start with github_pat_ or ghp_','err');
+    setGistToken(tok);
+    toast('Token saved','ok');
+  }
+  closeModal();
+  updateCloudStatus();
+  // Auto-test the connection
+  setTimeout(()=>gistLoad(true),300);
+}
+
+// ── CLOUD SYNC (legacy Apps Script — kept as fallback) ──
 async function cloudSave(silent){
   if(!CLOUD_SYNC_URL)return toast('Cloud sync URL not configured','err');
-  // Safety guard: warn if saving empty state over potentially non-empty cloud
+  // Safety guard 1: warn if saving empty state
   if(!silent&&S.records.length===0){
     if(!confirm('⚠ You have 0 records loaded.\n\nSaving now will OVERWRITE the cloud with an empty state, potentially destroying data saved from another device.\n\nAre you sure you want to save an empty state?'))return;
+  }
+  // Safety guard 2: check cloud first if local count is suspiciously low compared to last known cloud
+  if(!silent&&S.records.length>0&&S.records.length<100){
+    try{
+      const ctrl=new AbortController();const tmo=setTimeout(()=>ctrl.abort(),8000);
+      const res=await fetch(CLOUD_SYNC_URL+'?action=load&t='+Date.now(),{method:'GET',mode:'cors',redirect:'follow',signal:ctrl.signal});
+      clearTimeout(tmo);
+      if(res.ok){
+        const data=await res.json();
+        const cloudCount=data?.state?.records?.length||0;
+        if(cloudCount>S.records.length*5){
+          if(!confirm(`⚠ Warning: Cloud has ${cloudCount} records but you only have ${S.records.length} loaded locally.\n\nSaving now will OVERWRITE the cloud with your smaller dataset.\n\nAre you sure?`))return;
+        }
+      }
+    }catch(e){console.warn('Pre-save cloud check skipped:',e);}
   }
   const btn=document.getElementById('cloud-save-btn');
   if(btn){btn.disabled=true;btn.textContent='☁ Saving...';}
@@ -547,10 +764,17 @@ async function cloudLoad(silent){
   }
 }
 function updateCloudStatus(){
-  const lastSave=localStorage.getItem('pd_lastCloudSave');
-  const lastLoad=localStorage.getItem('pd_lastCloudLoad');
+  const lastSave=localStorage.getItem('pd_lastGistSave');
+  const lastLoad=localStorage.getItem('pd_lastGistLoad');
   const el=document.getElementById('cloud-status');
   if(!el)return;
+  if(!gistConfigured()){
+    el.textContent='⚙ Cloud not configured';
+    el.style.background='#FEF3F2';el.style.color='#A32D2D';
+    el.style.cursor='pointer';el.onclick=()=>showSettingsModal();
+    el.style.display='inline';return;
+  }
+  el.style.background='#E3F2FD';el.style.color='#1565C0';el.style.cursor='default';el.onclick=null;
   if(lastSave||lastLoad){
     const t=new Date(lastSave||lastLoad);
     const mins=Math.floor((Date.now()-t.getTime())/60000);
@@ -562,7 +786,8 @@ function updateCloudStatus(){
     el.textContent=`☁ ${lastSave?'Saved':'Loaded'} ${label}`;
     el.style.display='inline';
   }else{
-    el.style.display='none';
+    el.textContent='☁ Ready (never synced)';
+    el.style.display='inline';
   }
 }
 
@@ -1780,7 +2005,6 @@ document.querySelectorAll('.nav').forEach(n=>n.addEventListener('click',()=>navi
 // ── INIT ──
 async function init(){
   loadStore();
-  // Migrate roster: assign default roles + special cases for Ivan & Jennifer
   Object.keys(S.roster).forEach(name=>{
     if(!S.roster[name].role){
       const lo=name.toLowerCase();
@@ -1792,22 +2016,27 @@ async function init(){
   save();
   detectOverlaps();
   populatePeriods();
-  // Auto-load from cloud BEFORE first render (only if local is empty)
-  if(S.records.length===0&&CLOUD_SYNC_URL){
+  // Auto-load from Gist on first launch (only if local is empty AND token configured)
+  if(S.records.length===0&&gistConfigured()){
     const ovEl=document.getElementById('sec-overview');
     if(ovEl)ovEl.innerHTML='<div class="empty"><div class="empty-ico">☁</div><p>Loading from cloud...</p></div>';
     document.querySelector('.nav.on')?.classList.remove('on');
     document.querySelector('.nav[data-sec="overview"]')?.classList.add('on');
     document.getElementById('sec-overview').classList.add('on');
     try{
-      await cloudLoad(true);
+      await gistLoad(true);
       if(S.records.length>0)toast(`Loaded ${S.records.length} records from cloud`,'ok');
     }catch(e){console.error('Auto cloud load failed:',e);}
   }
   navigate('overview');
   updateCloudStatus();
-  // Refresh cloud status every minute
   setInterval(updateCloudStatus,60000);
+  // Prompt for token on first launch if missing
+  if(!gistConfigured()&&GIST_ID){
+    setTimeout(()=>{
+      if(!gistConfigured())toast('Click ⚙ Cloud Settings (sidebar) to configure cloud sync','warn');
+    },1500);
+  }
 }
 init();
 </script>
